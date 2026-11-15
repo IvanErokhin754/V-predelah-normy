@@ -1,6 +1,6 @@
 CMakeFiles/norma.dir/src/game/game.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/deque \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/copy.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/copy_move_common.h \
@@ -777,18 +777,18 @@ CMakeFiles/norma.dir/src/game/game.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/game_state.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/tasks.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/audio.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/math3d.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/sdl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/renderer.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/font.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/gl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/game_state.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/audio.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/math3d.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/sdl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/renderer.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__filesystem/path.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iomanip \

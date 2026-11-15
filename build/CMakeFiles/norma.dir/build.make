@@ -56,10 +56,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy
+CMAKE_SOURCE_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy/build
+CMAKE_BINARY_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/norma.dir/depend.make
@@ -76,130 +76,130 @@ CMakeFiles/norma.dir/codegen:
 .PHONY : CMakeFiles/norma.dir/codegen
 
 CMakeFiles/norma.dir/src/main.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/main.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/main.cpp
+CMakeFiles/norma.dir/src/main.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/main.cpp
 CMakeFiles/norma.dir/src/main.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/norma.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/main.cpp.o -MF CMakeFiles/norma.dir/src/main.cpp.o.d -o CMakeFiles/norma.dir/src/main.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/norma.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/main.cpp.o -MF CMakeFiles/norma.dir/src/main.cpp.o.d -o CMakeFiles/norma.dir/src/main.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/main.cpp
 
 CMakeFiles/norma.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/main.cpp > CMakeFiles/norma.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/main.cpp > CMakeFiles/norma.dir/src/main.cpp.i
 
 CMakeFiles/norma.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/main.cpp -o CMakeFiles/norma.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/main.cpp -o CMakeFiles/norma.dir/src/main.cpp.s
 
 CMakeFiles/norma.dir/src/engine/gl_min.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/engine/gl_min.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.cpp
+CMakeFiles/norma.dir/src/engine/gl_min.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.cpp
 CMakeFiles/norma.dir/src/engine/gl_min.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/norma.dir/src/engine/gl_min.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/gl_min.cpp.o -MF CMakeFiles/norma.dir/src/engine/gl_min.cpp.o.d -o CMakeFiles/norma.dir/src/engine/gl_min.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/norma.dir/src/engine/gl_min.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/gl_min.cpp.o -MF CMakeFiles/norma.dir/src/engine/gl_min.cpp.o.d -o CMakeFiles/norma.dir/src/engine/gl_min.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.cpp
 
 CMakeFiles/norma.dir/src/engine/gl_min.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/engine/gl_min.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.cpp > CMakeFiles/norma.dir/src/engine/gl_min.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.cpp > CMakeFiles/norma.dir/src/engine/gl_min.cpp.i
 
 CMakeFiles/norma.dir/src/engine/gl_min.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/engine/gl_min.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.cpp -o CMakeFiles/norma.dir/src/engine/gl_min.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.cpp -o CMakeFiles/norma.dir/src/engine/gl_min.cpp.s
 
 CMakeFiles/norma.dir/src/engine/font.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/engine/font.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.cpp
+CMakeFiles/norma.dir/src/engine/font.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.cpp
 CMakeFiles/norma.dir/src/engine/font.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/norma.dir/src/engine/font.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/font.cpp.o -MF CMakeFiles/norma.dir/src/engine/font.cpp.o.d -o CMakeFiles/norma.dir/src/engine/font.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/norma.dir/src/engine/font.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/font.cpp.o -MF CMakeFiles/norma.dir/src/engine/font.cpp.o.d -o CMakeFiles/norma.dir/src/engine/font.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.cpp
 
 CMakeFiles/norma.dir/src/engine/font.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/engine/font.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.cpp > CMakeFiles/norma.dir/src/engine/font.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.cpp > CMakeFiles/norma.dir/src/engine/font.cpp.i
 
 CMakeFiles/norma.dir/src/engine/font.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/engine/font.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.cpp -o CMakeFiles/norma.dir/src/engine/font.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.cpp -o CMakeFiles/norma.dir/src/engine/font.cpp.s
 
 CMakeFiles/norma.dir/src/engine/texgen.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/engine/texgen.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/texgen.cpp
+CMakeFiles/norma.dir/src/engine/texgen.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/texgen.cpp
 CMakeFiles/norma.dir/src/engine/texgen.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/norma.dir/src/engine/texgen.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/texgen.cpp.o -MF CMakeFiles/norma.dir/src/engine/texgen.cpp.o.d -o CMakeFiles/norma.dir/src/engine/texgen.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/texgen.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/norma.dir/src/engine/texgen.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/texgen.cpp.o -MF CMakeFiles/norma.dir/src/engine/texgen.cpp.o.d -o CMakeFiles/norma.dir/src/engine/texgen.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/texgen.cpp
 
 CMakeFiles/norma.dir/src/engine/texgen.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/engine/texgen.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/texgen.cpp > CMakeFiles/norma.dir/src/engine/texgen.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/texgen.cpp > CMakeFiles/norma.dir/src/engine/texgen.cpp.i
 
 CMakeFiles/norma.dir/src/engine/texgen.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/engine/texgen.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/texgen.cpp -o CMakeFiles/norma.dir/src/engine/texgen.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/texgen.cpp -o CMakeFiles/norma.dir/src/engine/texgen.cpp.s
 
 CMakeFiles/norma.dir/src/engine/renderer.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/engine/renderer.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.cpp
+CMakeFiles/norma.dir/src/engine/renderer.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.cpp
 CMakeFiles/norma.dir/src/engine/renderer.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/norma.dir/src/engine/renderer.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/renderer.cpp.o -MF CMakeFiles/norma.dir/src/engine/renderer.cpp.o.d -o CMakeFiles/norma.dir/src/engine/renderer.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/norma.dir/src/engine/renderer.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/renderer.cpp.o -MF CMakeFiles/norma.dir/src/engine/renderer.cpp.o.d -o CMakeFiles/norma.dir/src/engine/renderer.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.cpp
 
 CMakeFiles/norma.dir/src/engine/renderer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/engine/renderer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.cpp > CMakeFiles/norma.dir/src/engine/renderer.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.cpp > CMakeFiles/norma.dir/src/engine/renderer.cpp.i
 
 CMakeFiles/norma.dir/src/engine/renderer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/engine/renderer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.cpp -o CMakeFiles/norma.dir/src/engine/renderer.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.cpp -o CMakeFiles/norma.dir/src/engine/renderer.cpp.s
 
 CMakeFiles/norma.dir/src/engine/audio.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/engine/audio.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/audio.cpp
+CMakeFiles/norma.dir/src/engine/audio.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/audio.cpp
 CMakeFiles/norma.dir/src/engine/audio.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/norma.dir/src/engine/audio.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/audio.cpp.o -MF CMakeFiles/norma.dir/src/engine/audio.cpp.o.d -o CMakeFiles/norma.dir/src/engine/audio.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/audio.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/norma.dir/src/engine/audio.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/engine/audio.cpp.o -MF CMakeFiles/norma.dir/src/engine/audio.cpp.o.d -o CMakeFiles/norma.dir/src/engine/audio.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/audio.cpp
 
 CMakeFiles/norma.dir/src/engine/audio.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/engine/audio.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/audio.cpp > CMakeFiles/norma.dir/src/engine/audio.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/audio.cpp > CMakeFiles/norma.dir/src/engine/audio.cpp.i
 
 CMakeFiles/norma.dir/src/engine/audio.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/engine/audio.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/audio.cpp -o CMakeFiles/norma.dir/src/engine/audio.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/audio.cpp -o CMakeFiles/norma.dir/src/engine/audio.cpp.s
 
 CMakeFiles/norma.dir/src/game/level.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/game/level.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.cpp
+CMakeFiles/norma.dir/src/game/level.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.cpp
 CMakeFiles/norma.dir/src/game/level.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/norma.dir/src/game/level.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/level.cpp.o -MF CMakeFiles/norma.dir/src/game/level.cpp.o.d -o CMakeFiles/norma.dir/src/game/level.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/norma.dir/src/game/level.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/level.cpp.o -MF CMakeFiles/norma.dir/src/game/level.cpp.o.d -o CMakeFiles/norma.dir/src/game/level.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.cpp
 
 CMakeFiles/norma.dir/src/game/level.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/game/level.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.cpp > CMakeFiles/norma.dir/src/game/level.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.cpp > CMakeFiles/norma.dir/src/game/level.cpp.i
 
 CMakeFiles/norma.dir/src/game/level.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/game/level.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.cpp -o CMakeFiles/norma.dir/src/game/level.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.cpp -o CMakeFiles/norma.dir/src/game/level.cpp.s
 
 CMakeFiles/norma.dir/src/game/terminal.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/game/terminal.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.cpp
+CMakeFiles/norma.dir/src/game/terminal.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.cpp
 CMakeFiles/norma.dir/src/game/terminal.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/norma.dir/src/game/terminal.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/terminal.cpp.o -MF CMakeFiles/norma.dir/src/game/terminal.cpp.o.d -o CMakeFiles/norma.dir/src/game/terminal.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/norma.dir/src/game/terminal.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/terminal.cpp.o -MF CMakeFiles/norma.dir/src/game/terminal.cpp.o.d -o CMakeFiles/norma.dir/src/game/terminal.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.cpp
 
 CMakeFiles/norma.dir/src/game/terminal.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/game/terminal.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.cpp > CMakeFiles/norma.dir/src/game/terminal.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.cpp > CMakeFiles/norma.dir/src/game/terminal.cpp.i
 
 CMakeFiles/norma.dir/src/game/terminal.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/game/terminal.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.cpp -o CMakeFiles/norma.dir/src/game/terminal.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.cpp -o CMakeFiles/norma.dir/src/game/terminal.cpp.s
 
 CMakeFiles/norma.dir/src/game/game.cpp.o: CMakeFiles/norma.dir/flags.make
-CMakeFiles/norma.dir/src/game/game.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.cpp
+CMakeFiles/norma.dir/src/game/game.cpp.o: /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.cpp
 CMakeFiles/norma.dir/src/game/game.cpp.o: CMakeFiles/norma.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/norma.dir/src/game/game.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/game.cpp.o -MF CMakeFiles/norma.dir/src/game/game.cpp.o.d -o CMakeFiles/norma.dir/src/game/game.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/norma.dir/src/game/game.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/norma.dir/src/game/game.cpp.o -MF CMakeFiles/norma.dir/src/game/game.cpp.o.d -o CMakeFiles/norma.dir/src/game/game.cpp.o -c /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.cpp
 
 CMakeFiles/norma.dir/src/game/game.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/norma.dir/src/game/game.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.cpp > CMakeFiles/norma.dir/src/game/game.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.cpp > CMakeFiles/norma.dir/src/game/game.cpp.i
 
 CMakeFiles/norma.dir/src/game/game.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/norma.dir/src/game/game.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.cpp -o CMakeFiles/norma.dir/src/game/game.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.cpp -o CMakeFiles/norma.dir/src/game/game.cpp.s
 
 # Object files for target norma
 norma_OBJECTS = \
@@ -229,9 +229,9 @@ norma: CMakeFiles/norma.dir/build.make
 norma: libnorma_core.a
 norma: /opt/homebrew/lib/libSDL2-2.0.0.dylib
 norma: CMakeFiles/norma.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable norma"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable norma"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/norma.dir/link.txt --verbose=$(VERBOSE)
-	/opt/homebrew/bin/cmake -E copy_directory /Users/ivanerokhin2507/Desktop/v-predelah-normy/data /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/data
+	/opt/homebrew/bin/cmake -E copy_directory /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/data /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/data
 
 # Rule to build all files generated by this target.
 CMakeFiles/norma.dir/build: norma
@@ -242,6 +242,6 @@ CMakeFiles/norma.dir/clean:
 .PHONY : CMakeFiles/norma.dir/clean
 
 CMakeFiles/norma.dir/depend:
-	cd /Users/ivanerokhin2507/Desktop/v-predelah-normy/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/ivanerokhin2507/Desktop/v-predelah-normy /Users/ivanerokhin2507/Desktop/v-predelah-normy /Users/ivanerokhin2507/Desktop/v-predelah-normy/build /Users/ivanerokhin2507/Desktop/v-predelah-normy/build /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/norma.dir/DependInfo.cmake "--color=$(COLOR)" norma
+	cd /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2 /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2 /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles/norma.dir/DependInfo.cmake "--color=$(COLOR)" norma
 .PHONY : CMakeFiles/norma.dir/depend
 

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/core_tests.cpp" "CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o" "gcc" "CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o.d"
+  "/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/core_tests.cpp" "CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o" "gcc" "CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

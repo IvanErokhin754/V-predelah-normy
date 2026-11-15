@@ -13,6 +13,7 @@ struct Settings {
     bool typewriter = true;  // посимвольная печать
     float mouse = 1.0f;      // чувствительность мыши
     float volume = 0.8f;
+    float music = 0.6f;      // громкость эмбиента (data/audio/ambient.wav)
     bool fullscreen = false;
 };
 
@@ -61,6 +62,7 @@ private:
     float optionH_ = 0;
     float replayBox_[4] = {0, 0, 0, 0};
     bool replayVisible_ = false;
+    bool replayKindVitals_ = false; // кнопка повтора у датчика пульса, а не у записи голоса
 };
 
 } // namespace game

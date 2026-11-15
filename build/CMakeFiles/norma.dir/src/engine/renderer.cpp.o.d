@@ -1,6 +1,6 @@
 CMakeFiles/norma.dir/src/engine/renderer.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/renderer.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/renderer.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -751,6 +751,6 @@ CMakeFiles/norma.dir/src/engine/renderer.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/math3d.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/math3d.h

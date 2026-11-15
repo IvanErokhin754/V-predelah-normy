@@ -1,0 +1,19 @@
+# Неподчинение: игрок заходит в помещение для тестов и не подходит к терминалу.
+# С таймерами из balance.ini: напоминание через 25 с, предупреждения на 40 и 55 с,
+# на 70 с — расправа. Ожидается ending=killed.
+dev new
+wait 30
+dev skipfade
+wait 360
+dev tp 6.5 9.0 90 0
+wait 60
+dev tp 12.5 8.0 0 0
+wait 60
+dev tp 12.5 4.2 90 0
+wait 1600
+dev state
+wait 1000
+dev state
+wait 2600
+dev state
+shot scenario_shots/kill_end.ppm

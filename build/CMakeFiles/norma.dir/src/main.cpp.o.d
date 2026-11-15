@@ -1,5 +1,5 @@
 CMakeFiles/norma.dir/src/main.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/main.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/main.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -810,18 +810,18 @@ CMakeFiles/norma.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__filesystem/recursive_directory_iterator.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__filesystem/u8path.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/sstream \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/sdl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/game.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/game_state.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/tasks.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/audio.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/math3d.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/sdl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/renderer.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/font.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/gl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/sdl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/game.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/game_state.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/audio.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/math3d.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/sdl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/renderer.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.h

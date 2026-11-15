@@ -56,8 +56,11 @@ private:
         Sleep,       // затемнение перед новым днём
         BadEnd,      // дверь закрылась, звук оборвался
         FreeWalk,    // хорошая концовка: путь к дневному свету
-        WhiteOut     // выход на свет
+        WhiteOut,    // выход на свет
+        Kill         // конвоир расправляется с пленным за неподчинение
     };
+
+    enum class Ending { Good, BadLow, BadHigh, Killed };
 
     enum class EscortMode { Normal, Watch, Bad, Off };
 
@@ -95,7 +98,24 @@ private:
     void updateEscort(float dt);
     void updateLights(float dt);
     void updateSound();
-    void finishRun(bool good);
+    void finishRun(Ending ending);
+
+    // --- дисциплина конвоя ---
+    // Напоминание не считается нарушением; предупреждение — считается.
+    // Последнее предупреждение запускает расправу.
+    void updateDiscipline(float dt);
+    void remind(const std::string& text);
+    void warn(const std::string& text);
+    void startKill();
+    // Таймер простоя: напоминание после reminder секунд, затем
+    // предупреждение каждые strikeEvery секунд.
+    void idleRule(float dt, float reminder, const std::string& remindText, const std::string& warnText);
+    void updateKill(float dt);
+
+    // --- звук в мире: тише и глуше, если источник за стеной или закрытой дверью ---
+    float muffleFor(const Vec3& pos) const;
+    void playWorld(int sound, const Vec3& pos, float gain);
+    void updateAtmosphere(float dt);
 
     void interact();
     bool canUse(InteractId id) const;
@@ -103,7 +123,7 @@ private:
     void doShiftAction(int action);
     void say(const std::string& speaker, const std::string& text, float seconds, int sound = -1);
     void setEscortPath(const std::vector<Vec3>& path, bool leading);
-    void setDoor(int id, bool open);
+    void setDoor(int id, bool open, bool sound = true);
     bool controlLocked() const;
     Vec3 cameraEye() const;
 
@@ -148,6 +168,7 @@ private:
     bool monitorMode_ = false;
     float monitorBlend_ = 0; // 0 — обычный вид, 1 — камера у экрана
     InteractId aimed_ = UseNone;
+    bool pushing_ = false; // игрок упирается в конвоира
 
     // день
     Phase phase_ = Phase::Dawn;
@@ -177,9 +198,44 @@ private:
     uint32_t noise_ = 12345u;   // генератор для мерцания ламп
     float flickerTimer_ = 0;
 
+    // дисциплина конвоя
+    int strikes_ = 0;           // предупреждения за день
+    float idle_ = 0;            // простой в текущем правиле
+    int idleStage_ = 0;         // 0 — ещё не напоминали, 1 — напомнили, 2+ — предупреждения
+    int idleRuleId_ = -1;       // какое правило сейчас считает простой
+    float lagTime_ = 0;         // сколько игрок отстаёт от конвоира
+    int lagStage_ = 0;
+    bool escortWaiting_ = false; // конвоир стоит и ждёт отставшего
+    float zoneTime_ = 0;        // сколько игрок стоит там, где ему быть нельзя
+    float bumpTime_ = 0;        // сколько игрок толкает конвоира
+    bool bumpReminded_ = false; // первое — замечание, дальше — предупреждения
+    float strikeFlash_ = 0;     // красная вспышка на экране после предупреждения
+    float eyeFlare_ = 0;        // глаз конвоира разгорается
+    float strikeCooldown_ = 0;  // не два предупреждения подряд за одно и то же
+
+    // расправа
+    int killStep_ = 0;
+    float killTime_ = 0;
+    Vec3 killPos_;              // где стоит конвоир во время скримера
+    float killYaw_ = 0;
+    float killDist_ = 1.6f;
+    float shake_ = 0;
+
+    // атмосфера
+    float ambientTimer_ = 20;   // до следующего далёкого звука
+    float paTimer_ = 50;        // до следующего объявления по громкой связи
+    int paIndex_ = 0;
+    bool nightLights_ = false;  // после отбоя лампа в камере почти гаснет
+    float corridorFlicker_ = 1;
+    float lever_ = 0, leverTarget_ = 0;
+    float sectorDark_ = 0;      // обесточенный сектор: гаснет свет у двери крыла
+    float cutKnock_ = -1;       // стук из обесточенного сектора
+    int cutKnocks_ = 0;
+
     // концовка
     bool endingGood_ = false;
     bool endingLow_ = false;
+    bool endingKilled_ = false;
     int endingDay_ = 0;
     float endingTime_ = 0;
 

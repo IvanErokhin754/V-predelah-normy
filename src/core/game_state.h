@@ -78,6 +78,9 @@ public:
     bool debugReleaseForced() const { return forceRelease_; }
     void debugCompleteTasks(); // закрывает задания дня без начисления очков
     void debugEndDay();        // завершает день в обход проверки заданий
+    // Подменяет задания дня на указанные варианты (для проверки экранов).
+    // В сохранение не попадает: после загрузки день собирается заново из зерна.
+    void debugSetTasks(int first, int second);
 
 private:
     void dawn(Band route);

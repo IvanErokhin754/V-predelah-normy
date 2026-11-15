@@ -1,0 +1,42 @@
+# Четыре новых экрана терминала (команда dev tasks подставляет задания).
+dev new
+wait 30
+dev skipfade
+wait 360
+dev tp 6.5 9.0 90 0
+wait 60
+dev tp 12.5 8.0 0 0
+wait 60
+dev tp 12.5 4.2 0 0
+wait 200
+dev tasks 4 5
+dev tp 12.5 2.6 0 -25
+wait 3
+key E
+wait 60
+key ENTER
+wait 5
+shot scenario_shots/a_rations.ppm
+key 1
+key ENTER
+wait 80
+key ENTER
+wait 5
+shot scenario_shots/b_photo.ppm
+key ESC
+wait 60
+dev tasks 7 8
+key E
+wait 60
+key ENTER
+wait 3
+key R
+wait 70
+shot scenario_shots/c_vitals.ppm
+key 2
+key ENTER
+wait 80
+key ENTER
+wait 5
+shot scenario_shots/d_note.ppm
+dev state

@@ -27,6 +27,7 @@ Image blanket();      // 64x64
 Image pillow();       // 32x32
 Image robotBody();    // 128x128
 Image robotDark();    // 64x64
+Image robotEye();     // 64x16, глаз-щель: строки развёртки и зрачок-объектив
 Image crate();        // 128x128
 Image tableTop();     // 64x64
 Image monitorCase();  // 64x64
@@ -34,6 +35,9 @@ Image keyboard();     // 128x48
 Image speaker();      // 64x64
 Image cloth(Color base, Color stripe); // 32x32, одежда человека
 Image flat(Color c);  // 8x8, однотонная
+// Свет из-под двери на полу: 32x16, верхняя строка — у самой двери.
+// Яркость спадает с расстоянием, край рассыпается на пиксели (дизеринг).
+Image lightSpill();
 
 // --- детали, которые рассматривают вблизи ---
 Image monitorBezel();                                 // 512x448, рамка монитора
@@ -43,5 +47,6 @@ Image controlPanel(const std::string& title);         // 256x256
 Image invoice(int crateNo, int sealNo);               // 256x320
 Image sealTag(int sealNo);                            // 128x64
 Image crateLabel(int crateNo);                        // 128x64
+Image powerPanel(int sector, int occupied, bool active); // 256x256, смена «рубильник»
 
 } // namespace texgen

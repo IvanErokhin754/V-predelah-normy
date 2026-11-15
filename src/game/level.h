@@ -51,6 +51,9 @@ enum InteractId {
     UseSignalNone,
     UseSignalReceived,
     UseSignalRespond,
+    UsePowerLever,
+    UsePowerMark,
+    UsePowerBackup,
     kUseCount
 };
 
@@ -71,6 +74,7 @@ enum LightId {
     LightWing,
     LightBadRoom,
     LightDay,
+    LightPower,
     LightRobot,
     kLightCount
 };
@@ -100,6 +104,11 @@ enum ObjectId {
     ObjBtnSignalNone,
     ObjBtnSignalReceived,
     ObjBtnSignalRespond,
+    ObjPowerPanel,
+    ObjPowerLever,
+    ObjPowerGrip,
+    ObjBtnPowerMark,
+    ObjBtnPowerBackup,
     ObjLampCell,
     ObjLampCellDoor,
     ObjLampFork,
@@ -108,6 +117,7 @@ enum ObjectId {
     ObjLampSeal,
     ObjLampWing,
     ObjLampBadRoom,
+    ObjLampPower,
     ObjStripCell,
     ObjStripBad,
     ObjStripWing,
@@ -135,6 +145,10 @@ public:
     void setScreenTexture(const gfx::Texture& tex) { objects[ObjScreen].tex = tex; }
     // Перерисовывает номерную табличку под номер пленного.
     void setPlate(int prisonerNumber);
+    // Табло пульта «рубильник»; active — смена идёт, табло горит.
+    void setPowerPanel(const core::Shift& shift, bool active);
+    // Положение рубильника: 0 — поднят, 1 — опущен.
+    void setLever(float down);
 
     // --- коллизии ---
     bool solidCell(int cx, int cz) const;
@@ -159,7 +173,8 @@ public:
     std::vector<Interactable> interactables;
 
     // Положение конвоира и человека задаёт игра перед отрисовкой.
-    void placeRobot(const Vec3& pos, float yaw, float bob, float eyeGlow);
+    // eyeOpen > 1 — глаз-щель раскрывается (скример).
+    void placeRobot(const Vec3& pos, float yaw, float bob, float eyeGlow, float eyeOpen = 1.0f);
     void placeHuman(const Vec3& pos, float yaw, bool visible);
 
 private:
@@ -177,6 +192,8 @@ private:
     gfx::Texture texSealTag_[2];
     gfx::Texture texInvoice_;
     gfx::Texture texPlate_;
+    gfx::Texture texPower_;
+    int powerShown_ = -1; // что сейчас нарисовано на табло (чтобы не перерисовывать каждый кадр)
 };
 
 } // namespace game

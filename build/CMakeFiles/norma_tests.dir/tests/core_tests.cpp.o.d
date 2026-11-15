@@ -1,5 +1,5 @@
 CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/core_tests.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/core_tests.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -658,7 +658,7 @@ CMakeFiles/norma_tests.dir/tests/core_tests.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/sample.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bit \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/../src/core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/../src/core/game_state.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/../src/core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/tests/../src/core/tasks.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/../src/core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/../src/core/game_state.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/../src/core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/tests/../src/core/tasks.h

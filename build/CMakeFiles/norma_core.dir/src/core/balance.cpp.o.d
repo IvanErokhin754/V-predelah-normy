@@ -1,6 +1,6 @@
 CMakeFiles/norma_core.dir/src/core/balance.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/balance.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/balance.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/balance.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \

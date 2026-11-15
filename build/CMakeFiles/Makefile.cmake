@@ -7,7 +7,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/Users/ivanerokhin2507/Desktop/v-predelah-normy/CMakeLists.txt"
+  "/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/CMakeLists.txt"
   "CMakeFiles/4.5.0/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.5.0/CMakeSystem.cmake"
   "/opt/homebrew/lib/cmake/SDL2/SDL2Config.cmake"

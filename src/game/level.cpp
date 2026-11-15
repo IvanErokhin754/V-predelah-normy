@@ -247,6 +247,11 @@ void Level::build(int prisonerNumber) {
     mb[MSteel].box({7.0f, 0.95f, 3.85f}, {7.08f, 1.80f, 4.70f}, 2, All & ~gfx::MeshBuilder::PosX);
     mb[MSpeaker].box({7.0f, 2.35f, 3.95f}, {7.08f, 2.65f, 4.25f});
 
+    // Оборудование смены «рубильник»: пульт на северной стене, слева от стола.
+    mb[MSteel].box({9.55f, 0.95f, 1.0f}, {9.85f, 1.65f, 1.10f}, 2); // короб рубильника
+    mb[MDark].box({9.62f, 1.02f, 1.10f}, {9.78f, 1.58f, 1.11f});    // прорезь
+    mb[MSteel].box({8.32f, 0.55f, 1.0f}, {9.48f, 0.86f, 1.06f}, 2);  // полка с кнопками
+
     // ---------- комната плохой концовки ----------
     // Один стул посреди пустой комнаты.
     mb[MSteel].box({12.27f, 0.42f, 13.15f}, {12.73f, 0.46f, 13.60f}, 2);
@@ -294,6 +299,24 @@ void Level::build(int prisonerNumber) {
     objects[ObjReaderLed].tex = white;
     objects[ObjReaderLed].tint = {0.3f, 1.0f, 0.4f};
 
+    // Пульт «рубильник»: табло обновляется под смену.
+    objects[ObjPowerPanel].mesh = boxMesh({8.30f, 0.92f, 1.0f}, {9.50f, 1.92f, 1.06f});
+    texPower_ = gfx::makeTexture(texgen::powerPanel(3, 2, false), false, false);
+    objects[ObjPowerPanel].tex = texPower_;
+    {
+        // Рычаг: ось на уровне 1.3 м, в покое смотрит вверх.
+        gfx::MeshBuilder arm, grip;
+        arm.box({-0.025f, 0.0f, -0.025f}, {0.025f, 0.30f, 0.025f}, 2);
+        arm.box({-0.06f, -0.03f, -0.03f}, {0.06f, 0.03f, 0.03f}, 2);
+        grip.box({-0.045f, 0.28f, -0.045f}, {0.045f, 0.40f, 0.045f});
+        objects[ObjPowerLever].mesh = gfx::uploadMesh(arm);
+        objects[ObjPowerLever].tex = tex[MSteel];
+        objects[ObjPowerGrip].mesh = gfx::uploadMesh(grip);
+        objects[ObjPowerGrip].tex = gfx::makeTexture(texgen::flat(Color{150, 34, 28, 255}), true, false);
+        setLever(0);
+    }
+    interactables.push_back({UsePowerLever, {9.50f, 1.0f, 1.0f}, {9.90f, 1.85f, 1.55f}});
+
     // Кнопки. Каждая — отдельный предмет со своей надписью.
     struct ButtonDef {
         ObjectId obj;
@@ -311,6 +334,8 @@ void Level::build(int prisonerNumber) {
         {ObjBtnSignalNone, UseSignalNone, "СИГНАЛА НЕТ", kRed, {7.08f, 1.50f, 4.065f}, {7.11f, 1.66f, 4.485f}, gfx::MeshBuilder::PosX},
         {ObjBtnSignalReceived, UseSignalReceived, "СИГНАЛ ПРИНЯТ", kGreen, {7.08f, 1.29f, 4.065f}, {7.11f, 1.45f, 4.485f}, gfx::MeshBuilder::PosX},
         {ObjBtnSignalRespond, UseSignalRespond, "ЗАПРОС СВЯЗИ", kBlue, {7.08f, 1.08f, 4.065f}, {7.11f, 1.24f, 4.485f}, gfx::MeshBuilder::PosX},
+        {ObjBtnPowerMark, UsePowerMark, "СЕКТОР ЗАНЯТ", kAmber, {8.38f, 0.62f, 1.06f}, {8.86f, 0.80f, 1.09f}, gfx::MeshBuilder::PosZ},
+        {ObjBtnPowerBackup, UsePowerBackup, "РЕЗЕРВ", kBlue, {8.94f, 0.62f, 1.06f}, {9.42f, 0.80f, 1.09f}, gfx::MeshBuilder::PosZ},
     };
     for (const ButtonDef& b : buttons) {
         objects[b.obj].mesh = boxMesh(b.mn, b.mx);
@@ -332,6 +357,7 @@ void Level::build(int prisonerNumber) {
         {ObjLampSeal, {15.0f, 2.92f, 2.6f}, {15.4f, 3.0f, 3.0f}},
         {ObjLampWing, {7.0f, 2.36f, 2.88f}, {7.07f, 2.46f, 3.12f}},
         {ObjLampBadRoom, {12.3f, 2.92f, 13.3f}, {12.7f, 3.0f, 13.7f}},
+        {ObjLampPower, {8.75f, 2.10f, 1.0f}, {9.05f, 2.20f, 1.08f}},
     };
     for (const LampDef& l : lamps) {
         objects[l.obj].mesh = boxMesh(l.mn, l.mx);
@@ -339,13 +365,22 @@ void Level::build(int prisonerNumber) {
         objects[l.obj].lit = 0.0f;
     }
 
-    // Полоски света под дверями.
-    objects[ObjStripCell].mesh = boxMesh({6.0f, 0.0f, 10.57f}, {7.0f, 0.035f, 10.60f});
-    objects[ObjStripBad].mesh = boxMesh({12.0f, 0.0f, 10.40f}, {13.0f, 0.035f, 10.43f});
-    objects[ObjStripWing].mesh = boxMesh({7.06f, 0.0f, 2.5f}, {7.09f, 0.035f, 3.5f});
-    for (ObjectId id : {ObjStripCell, ObjStripBad, ObjStripWing}) {
-        objects[id].tex = white;
-        objects[id].lit = 0.0f;
+    // Свет из-под дверей: пятно на полу, которое гаснет к краю и
+    // рассыпается на пиксели. Верхний край текстуры — у самой двери.
+    {
+        const gfx::Texture spill = gfx::makeTexture(texgen::lightSpill(), true, false);
+        auto floorSpill = [&](ObjectId id, const Vec3& center, const Vec3& halfRight, const Vec3& towardDoor) {
+            gfx::MeshBuilder b;
+            b.quad(center, halfRight, towardDoor, {0, 1, 0}, 0, 0, 1, 1);
+            objects[id].mesh = gfx::uploadMesh(b);
+            objects[id].tex = spill;
+            objects[id].lit = 0.0f;
+        };
+        // В камеру — свет коридора; в коридор — свет комнаты за развилкой;
+        // в помещение для тестов — из пустого крыла.
+        floorSpill(ObjStripCell, {6.5f, 0.004f, 10.80f}, {0.46f, 0, 0}, {0, 0, -0.24f});
+        floorSpill(ObjStripBad, {12.5f, 0.004f, 10.20f}, {-0.46f, 0, 0}, {0, 0, 0.24f});
+        floorSpill(ObjStripWing, {7.30f, 0.004f, 3.0f}, {0, 0, -0.46f}, {-0.24f, 0, 0});
     }
 
     // Наружная дверь: закрытая створка или дневной свет.
@@ -389,7 +424,7 @@ void Level::build(int prisonerNumber) {
         objects[ObjRobotDark].mesh = gfx::uploadMesh(dark);
         objects[ObjRobotDark].tex = gfx::makeTexture(texgen::robotDark(), true, true);
         objects[ObjRobotEye].mesh = gfx::uploadMesh(eye);
-        objects[ObjRobotEye].tex = white;
+        objects[ObjRobotEye].tex = gfx::makeTexture(texgen::robotEye(), true, false);
         objects[ObjRobotEye].tint = {1.0f, 0.12f, 0.08f};
         objects[ObjRobotEye].lit = 0.0f;
     }
@@ -434,6 +469,7 @@ void Level::build(int prisonerNumber) {
     light(LightWing, {7.4f, 2.3f, 3.0f}, 3.2f, {7, 0, 1}, {16, 3, 6.5f});
     light(LightBadRoom, {12.5f, 2.75f, 13.5f}, 5.5f, {11, 0, 10.5f}, {14, 3, 15});
     light(LightDay, {1.4f, 1.4f, 9.5f}, 13.0f, {1, 0, 8}, {14, 3, 10});
+    light(LightPower, {8.9f, 2.0f, 1.5f}, 3.2f, {7, 0, 1}, {16, 3, 6.5f});
     lights[LightRobot].radius = 1.7f;
 
     // ---------- предметы для взаимодействия ----------
@@ -454,6 +490,23 @@ void Level::setShiftTextures(const core::Shift& shift) {
     gfx::updateTexture(texSealTag_[1], texgen::sealTag(shift.neighborSeal));
     gfx::updateTexture(texCrateLabel_[0], texgen::crateLabel(shift.crateNo));
     gfx::updateTexture(texCrateLabel_[1], texgen::crateLabel(shift.neighborNo));
+}
+
+void Level::setPowerPanel(const core::Shift& shift, bool active) {
+    const int key = shift.kind == core::ShiftKind::Power ? (shift.powerSector * 10 + shift.powerOccupied) * 2 + (active ? 1 : 0) : 0;
+    if (key == powerShown_) return;
+    powerShown_ = key;
+    if (shift.kind == core::ShiftKind::Power)
+        gfx::updateTexture(texPower_, texgen::powerPanel(shift.powerSector, shift.powerOccupied, active));
+    else
+        gfx::updateTexture(texPower_, texgen::powerPanel(3, 0, false));
+}
+
+void Level::setLever(float down) {
+    const float angle = 2.5f * clamp01(down); // от «вверх» до «вниз, к себе»
+    const Mat4 m = Mat4::translate({9.70f, 1.30f, 1.12f}) * Mat4::rotateX(angle);
+    objects[ObjPowerLever].model = m;
+    objects[ObjPowerGrip].model = m;
 }
 
 bool Level::solidCell(int cx, int cz) const { return isSolid(cx, cz); }
@@ -529,12 +582,15 @@ void Level::updateDoors(float dt) {
     }
 }
 
-void Level::placeRobot(const Vec3& pos, float yaw, float bob, float eyeGlow) {
+void Level::placeRobot(const Vec3& pos, float yaw, float bob, float eyeGlow, float eyeOpen) {
     const Mat4 m = Mat4::translate({pos.x, bob, pos.z}) * Mat4::rotateY(-yaw) *
                    Mat4::scale({1.18f, 1.18f, 1.18f});
     objects[ObjRobotBody].model = m;
     objects[ObjRobotDark].model = m;
-    objects[ObjRobotEye].model = m;
+    const Vec3 eyeCenter{0, 1.525f, -0.19f};
+    objects[ObjRobotEye].model = m * Mat4::translate(eyeCenter) *
+                                 Mat4::scale({1.0f + 0.25f * (eyeOpen - 1.0f), eyeOpen, 1.0f}) *
+                                 Mat4::translate(eyeCenter * -1.0f);
     objects[ObjRobotEye].emissive = eyeGlow;
     const Vec3 forward{std::sin(yaw), 0, -std::cos(yaw)};
     lights[LightRobot].pos = Vec3{pos.x, 1.8f, pos.z} + forward * 0.4f;

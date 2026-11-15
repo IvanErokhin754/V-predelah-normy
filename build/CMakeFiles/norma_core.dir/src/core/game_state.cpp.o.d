@@ -1,6 +1,6 @@
 CMakeFiles/norma_core.dir/src/core/game_state.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/game_state.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/game_state.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/game_state.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/game_state.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -659,9 +659,9 @@ CMakeFiles/norma_core.dir/src/core/game_state.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/sample.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bit \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/tasks.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/lexicographical_compare_three_way.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/three_way_comp_ref_type.h \

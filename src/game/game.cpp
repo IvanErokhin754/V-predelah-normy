@@ -82,6 +82,19 @@ bool Game::init(const Options& options, std::string* error) {
     loadSettings();
     audio_.setMasterVolume(settings_.volume);
 
+    // Эмбиент: необязательный файл data/audio/ambient.wav.
+    {
+        const std::string musicPath = options_.dataDir + "audio/ambient.wav";
+        std::ifstream probe(musicPath, std::ios::binary);
+        if (probe) {
+            std::string err;
+            if (!audio_.loadMusic(musicPath, &err)) {
+                notice_ = "Эмбиент: " + err;
+                std::fprintf(stderr, "%s\n", notice_.c_str());
+            }
+        }
+    }
+
     level_.build(0);
     level_.setScreenTexture(screenTarget_.color);
     screen_ = Screen::MainMenu;
@@ -122,6 +135,7 @@ void Game::loadSettings() {
         if (key == "typewriter") settings_.typewriter = value != 0;
         if (key == "mouse") settings_.mouse = std::clamp(value, 0.2f, 3.0f);
         if (key == "volume") settings_.volume = std::clamp(value, 0.0f, 1.0f);
+        if (key == "music") settings_.music = std::clamp(value, 0.0f, 1.0f);
         if (key == "fullscreen") settings_.fullscreen = value != 0;
     }
 }
@@ -133,6 +147,7 @@ void Game::storeSettings() {
     out << "typewriter=" << (settings_.typewriter ? 1 : 0) << "\n";
     out << "mouse=" << settings_.mouse << "\n";
     out << "volume=" << settings_.volume << "\n";
+    out << "music=" << settings_.music << "\n";
     out << "fullscreen=" << (settings_.fullscreen ? 1 : 0) << "\n";
     writeFile(options_.saveDir + "settings.ini", out.str());
 }
@@ -150,7 +165,7 @@ bool Game::continueGame() {
     std::string packed, plain;
     if (!readFile(options_.saveDir + "save.dat", &packed)) return false;
     if (!core::GameState::unpack(packed, &plain) || !state_.deserialize(plain)) {
-        notice_ = "Сохранение повреждено";
+        notice_ = "Сохранение повреждено или осталось от прошлой версии";
         return false;
     }
     screen_ = Screen::Playing;
@@ -215,6 +230,30 @@ void Game::startDay() {
     humanVisible_ = false;
     silent_ = false;
     white_ = 0;
+
+    strikes_ = 0;
+    idle_ = 0;
+    idleStage_ = 0;
+    idleRuleId_ = -1;
+    lagTime_ = 0;
+    lagStage_ = 0;
+    escortWaiting_ = false;
+    zoneTime_ = 0;
+    bumpTime_ = 0;
+    bumpReminded_ = false;
+    strikeFlash_ = 0;
+    eyeFlare_ = 0;
+    strikeCooldown_ = 0;
+    killStep_ = 0;
+    killTime_ = 0;
+    shake_ = 0;
+    nightLights_ = false;
+    lever_ = leverTarget_ = 0;
+    level_.setLever(0);
+    sectorDark_ = 0;
+    cutKnock_ = -1;
+    cutKnocks_ = 0;
+    paTimer_ = 35.0f + static_cast<float>(state_.day() % 4) * 9.0f;
     fade_ = 1;
     fadeTarget_ = 0;
     fadeSpeed_ = 0.5f;
@@ -230,13 +269,27 @@ void Game::enterPhase(Phase p) {
     phaseStep_ = 0;
 }
 
-void Game::setDoor(int id, bool open) {
+void Game::setDoor(int id, bool open, bool sound) {
     Door& d = level_.doors[id];
     const float target = open ? 1.0f : 0.0f;
     if (d.target == target) return;
     d.target = target;
-    audio_.playAt(d.heavy ? audio::HeavyDoor : audio::DoorSlide, d.base + Vec3{0, 1.2f, 0},
-                  d.heavy ? 2.2f : 1.6f);
+    if (sound) playWorld(d.heavy ? audio::HeavyDoor : audio::DoorSlide, d.base + Vec3{0, 1.2f, 0}, d.heavy ? 2.2f : 1.6f);
+}
+
+float Game::muffleFor(const Vec3& pos) const {
+    // Отрезок от уха до источника, без последних 30 см: дверь, которая сама
+    // издаёт звук, не должна глушить сама себя.
+    const Vec3 ear = cameraEye();
+    Vec3 d = pos - ear;
+    const float len = length(d);
+    if (len < 0.4f) return 0.0f;
+    d = d * ((len - 0.3f) / len);
+    return level_.lineClear(ear, ear + d) ? 0.0f : 1.0f;
+}
+
+void Game::playWorld(int sound, const Vec3& pos, float gain) {
+    audio_.playAt(static_cast<audio::Sound>(sound), pos, gain, muffleFor(pos));
 }
 
 void Game::setEscortPath(const std::vector<Vec3>& path, bool leading) {
@@ -253,7 +306,7 @@ void Game::say(const std::string& speaker, const std::string& text, float second
 
 bool Game::controlLocked() const {
     if (monitorMode_ || monitorBlend_ > 0.02f) return true;
-    if (phase_ == Phase::Sleep || phase_ == Phase::WhiteOut) return true;
+    if (phase_ == Phase::Sleep || phase_ == Phase::WhiteOut || phase_ == Phase::Kill) return true;
     if (phase_ == Phase::BadEnd && phaseStep_ >= 1) return true;
     return false;
 }
@@ -289,7 +342,7 @@ void Game::updatePhase(float dt) {
                     phaseStep_ = 2;
                 }
                 if (phaseStep_ == 2 && phaseTime_ > 6.5f) {
-                    audio_.playAt(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                    playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
                     phaseStep_ = 3;
                 }
                 if (phaseStep_ == 3 && phaseTime_ > 7.4f) {
@@ -313,13 +366,13 @@ void Game::updatePhase(float dt) {
                 }
                 if (phaseStep_ == 2 && state_.numberConfirmed()) {
                     say(kRobot, "Номер подтверждён. Следуйте за конвоиром.", 3.5f, audio::PaVoice);
-                    audio_.playAt(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                    playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
                     setDoor(DoorCell, true);
                     enterPhase(Phase::EscortOut);
                 }
             } else if (morning == core::Morning::Watch) {
                 if (phaseStep_ == 1 && phaseTime_ > 3.4f) {
-                    audio_.playAt(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                    playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
                     setDoor(DoorCell, true);
                     phaseStep_ = 2;
                 }
@@ -336,7 +389,7 @@ void Game::updatePhase(float dt) {
                 }
             } else {
                 if (phaseStep_ == 1 && phaseTime_ > 3.2f) {
-                    audio_.playAt(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                    playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
                     setDoor(DoorCell, true);
                     say(kRobot,
                         escortMode_ == EscortMode::Bad ? "Следуйте за конвоиром."
@@ -396,6 +449,7 @@ void Game::updatePhase(float dt) {
             if (terminal_.takeConfirmEvent()) {
                 saveGame();
                 tasksDoneTimer_ = 0;
+                idleRuleId_ = -1; // ответ принят — простой считается заново
             }
             const core::Shift& shift = state_.shift();
             if (state_.testDone() && state_.shiftPending() && !shiftAnnounced_) {
@@ -407,9 +461,14 @@ void Game::updatePhase(float dt) {
                             "Рабочая смена. Сверьте пломбу ящика № " + std::to_string(shift.crateNo) +
                                 " с накладной. Только этот ящик.",
                             6.0f, audio::PaChime);
-                    else
+                    else if (shift.kind == core::ShiftKind::Signal)
                         say(kSpeaker, "Рабочая смена. Пустое крыло. Подтвердите, слышен ли сигнал.", 5.5f,
                             audio::PaChime);
+                    else
+                        say(kSpeaker,
+                            "Рабочая смена. Плановое отключение. Обесточьте сектор Д-" +
+                                std::to_string(shift.powerSector) + " рубильником на северной стене.",
+                            6.5f, audio::PaChime);
                     shiftAnnounced_ = true;
                     knockTimer_ = 2.5f;
                     tasksDoneTimer_ = 0;
@@ -418,7 +477,7 @@ void Game::updatePhase(float dt) {
             if (shiftAnnounced_ && state_.shiftPending() && shift.kind == core::ShiftKind::Signal) {
                 knockTimer_ -= dt;
                 if (knockTimer_ <= 0) {
-                    audio_.playAt(audio::Knock, kWingDoorPos, 2.4f); // кто-то дважды стучит
+                    playWorld(audio::Knock, kWingDoorPos, 2.4f); // кто-то дважды стучит
                     knockTimer_ = 6.5f;
                 }
             }
@@ -427,7 +486,8 @@ void Game::updatePhase(float dt) {
                 if (tasksDoneTimer_ > 1.8f && lines_.empty()) {
                     say(kSpeaker, "Задания дня приняты. Возвращайтесь в камеру.", 3.8f, audio::PaChime);
                     setDoor(DoorGate, true); // шлюз открывается только теперь
-                    setDoor(DoorCell, true);
+                    // Дверь камеры открывается, когда игрок подходит к ней, а не сейчас:
+                    // иначе её звук долетает до помещения для тестов «ниоткуда».
                     setEscortPath({{12.5f, 0, 5.6f}, spot::kTestNeck, spot::kFork, spot::kEscortAtCell}, true);
                     enterPhase(Phase::EscortBack);
                 }
@@ -436,18 +496,31 @@ void Game::updatePhase(float dt) {
         }
 
         case Phase::EscortBack:
-            if (playerPos_.z > 8.0f && escort_.pos.z > 8.0f) setDoor(DoorGate, false);
-            if (playerInCell) {
+            // Дверь камеры открывается у игрока на глазах: он уже в коридоре.
+            if (playerPos_.z > 7.6f && playerPos_.x < 10.5f) {
+                if (level_.doors[DoorCell].target < 1.0f)
+                    playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                setDoor(DoorCell, true);
+            }
+            if (playerInCell && level_.doors[DoorCell].open > 0.5f) {
                 setDoor(DoorCell, false);
                 enterPhase(Phase::Evening);
             }
             break;
 
         case Phase::Evening:
-            if (escort_.pos.z > 8.0f) setDoor(DoorGate, false);
             if (phaseStep_ == 0 && level_.doors[DoorCell].open <= 0.0f) {
-                audio_.playAt(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                playWorld(audio::LockClick, {6.5f, 1.2f, 10.5f}, 2.0f);
+                // Шлюз в дальнем конце коридора закрывается беззвучно: из камеры
+                // его не видно, а звук двери без видимой двери сбивает с толку.
+                setDoor(DoorGate, false, false);
                 phaseStep_ = 1;
+            }
+            // Отбой: объявление и почти полная темнота в камере.
+            if (phaseStep_ == 1 && phaseTime_ > 9.0f) {
+                say(kPa, "Отбой. Свет в камерах отключается.", 3.5f, audio::PaChime);
+                nightLights_ = true;
+                phaseStep_ = 2;
             }
             break;
 
@@ -470,7 +543,8 @@ void Game::updatePhase(float dt) {
                 phaseStep_ = 1;
                 phaseTime_ = 0;
             }
-            if (phaseStep_ == 1 && phaseTime_ > 4.0f) finishRun(false);
+            if (phaseStep_ == 1 && phaseTime_ > 4.0f)
+                finishRun(morning == core::Morning::BadLow ? Ending::BadLow : Ending::BadHigh);
             break;
 
         case Phase::FreeWalk:
@@ -479,14 +553,19 @@ void Game::updatePhase(float dt) {
 
         case Phase::WhiteOut:
             white_ = std::min(1.0f, white_ + dt * 0.6f);
-            if (phaseTime_ > 2.6f) finishRun(true);
+            if (phaseTime_ > 2.6f) finishRun(Ending::Good);
+            break;
+
+        case Phase::Kill:
+            updateKill(dt);
             break;
     }
 }
 
-void Game::finishRun(bool good) {
-    endingGood_ = good;
-    endingLow_ = state_.morning() == core::Morning::BadLow;
+void Game::finishRun(Ending ending) {
+    endingGood_ = ending == Ending::Good;
+    endingLow_ = ending == Ending::BadLow;
+    endingKilled_ = ending == Ending::Killed;
     endingDay_ = state_.day();
     endingTime_ = 0;
     screen_ = Screen::Ending;
@@ -499,7 +578,13 @@ void Game::finishRun(bool good) {
 
 bool Game::canUse(InteractId id) const {
     const core::Shift& shift = state_.shift();
-    const bool shiftActive = phase_ == Phase::AtTest && shiftAnnounced_ && state_.shiftPending();
+    // Оборудование смен доступно под рукой всё время проверки. Нажать не то
+    // или не тогда — нарушение: конвоир выносит предупреждение (см. interact).
+    // После своей смены её кнопки молчат: повторное нажатие ничего не значит.
+    auto equipment = [&](core::ShiftKind kind) {
+        if (phase_ != Phase::AtTest) return false;
+        return !(shift.kind == kind && shift.done);
+    };
     switch (id) {
         case UseTerminal: return phase_ == Phase::AtTest;
         case UseBunk: return phase_ == Phase::Evening;
@@ -508,10 +593,13 @@ bool Game::canUse(InteractId id) const {
                    phaseStep_ >= 2 && !state_.numberConfirmed();
         case UseSealConfirm:
         case UseSealMismatch:
-        case UseSealReader: return shiftActive && shift.kind == core::ShiftKind::Seal;
+        case UseSealReader: return equipment(core::ShiftKind::Seal);
         case UseSignalNone:
         case UseSignalReceived:
-        case UseSignalRespond: return shiftActive && shift.kind == core::ShiftKind::Signal;
+        case UseSignalRespond: return equipment(core::ShiftKind::Signal);
+        case UsePowerLever:
+        case UsePowerMark:
+        case UsePowerBackup: return equipment(core::ShiftKind::Power);
         default: return false;
     }
 }
@@ -528,6 +616,9 @@ std::string Game::promptFor(InteractId id) const {
         case UseSignalNone: return "[E] Нажать «Сигнала нет»";
         case UseSignalReceived: return "[E] Нажать «Сигнал принят»";
         case UseSignalRespond: return "[E] Запросить связь и ответить на стук";
+        case UsePowerLever: return "[E] Опустить рубильник";
+        case UsePowerMark: return "[E] Нажать «Сектор занят»";
+        case UsePowerBackup: return "[E] Нажать «Резерв»";
         default: return "";
     }
 }
@@ -548,13 +639,37 @@ void Game::interact() {
             audio_.play(audio::Button, 0.8f);
             saveGame();
             break;
-        case UseSealConfirm: doShiftAction(core::kSealConfirm); break;
-        case UseSealMismatch: doShiftAction(core::kSealMismatch); break;
-        case UseSealReader: doShiftAction(core::kSealScanNeighbor); break;
-        case UseSignalNone: doShiftAction(core::kSignalNone); break;
-        case UseSignalReceived: doShiftAction(core::kSignalReceived); break;
-        case UseSignalRespond: doShiftAction(core::kSignalRespond); break;
-        default: break;
+        default: {
+            // Оборудование смен: годится только то, что велели, и только когда велели.
+            struct Map {
+                InteractId use;
+                core::ShiftKind kind;
+                int action;
+            };
+            static const Map map[] = {
+                {UseSealConfirm, core::ShiftKind::Seal, core::kSealConfirm},
+                {UseSealMismatch, core::ShiftKind::Seal, core::kSealMismatch},
+                {UseSealReader, core::ShiftKind::Seal, core::kSealScanNeighbor},
+                {UseSignalNone, core::ShiftKind::Signal, core::kSignalNone},
+                {UseSignalReceived, core::ShiftKind::Signal, core::kSignalReceived},
+                {UseSignalRespond, core::ShiftKind::Signal, core::kSignalRespond},
+                {UsePowerLever, core::ShiftKind::Power, core::kPowerCut},
+                {UsePowerMark, core::ShiftKind::Power, core::kPowerMark},
+                {UsePowerBackup, core::ShiftKind::Power, core::kPowerBackup},
+            };
+            for (const Map& m : map) {
+                if (m.use != aimed_) continue;
+                const bool allowed = shiftAnnounced_ && state_.shiftPending() && state_.shift().kind == m.kind;
+                if (allowed) {
+                    doShiftAction(m.action);
+                } else {
+                    audio_.play(audio::Button, 0.6f);
+                    warn("Не трогайте оборудование без распоряжения.");
+                }
+                break;
+            }
+            break;
+        }
     }
 }
 
@@ -579,6 +694,25 @@ void Game::doShiftAction(int action) {
                                              : "Отчёт смены: расхождение отмечено.",
                 3.5f);
         }
+    } else if (kind == core::ShiftKind::Power) {
+        const std::string sector = "Д-" + std::to_string(state_.shift().powerSector);
+        if (action == core::kPowerCut) {
+            // Рубильник опущен. Сектор гаснет, и за дверью крыла кто-то бьёт в дверь.
+            leverTarget_ = 1;
+            playWorld(audio::Lever, {9.7f, 1.3f, 1.2f}, 1.6f);
+            playWorld(audio::PowerDown, kWingDoorPos, 2.0f);
+            cutKnock_ = 2.4f;
+            cutKnocks_ = 0;
+            say(kSpeaker, "Отчёт смены: сектор " + sector + " обесточен.", 3.5f);
+        } else if (action == core::kPowerMark) {
+            audio_.play(audio::Button, 0.9f);
+            say(kSpeaker, "Отчёт смены: сектор " + sector + " отмечен как занятый. Отключение отложено.", 4.5f);
+        } else {
+            audio_.play(audio::Button, 0.9f);
+            audio_.play(audio::Static, 0.3f);
+            eyeFlare_ = 2.5f; // конвоир поворачивается и смотрит — молча
+            say(kSpeaker, "Отчёт смены: сектор " + sector + " переведён на резервное питание.", 4.0f);
+        }
     } else {
         audio_.play(audio::Button, 0.9f);
         if (action == core::kSignalNone) {
@@ -589,10 +723,278 @@ void Game::doShiftAction(int action) {
             say(kSpeaker, "Отчёт смены: сигнал принят.", 3.5f);
         } else {
             audio_.play(audio::Static, 0.35f);
-            audio_.playAt(audio::Knock, playerPos_ + Vec3{0, 1.2f, 0}, 1.4f); // ответ игрока
+            playWorld(audio::Knock, playerPos_ + Vec3{0, 1.2f, 0}, 1.4f); // ответ игрока
             replyKnock_ = 1.8f;
             say(kSpeaker, "Отчёт смены: открыт канал связи с крылом.", 4.0f);
         }
+    }
+}
+
+
+// ======================================================== дисциплина конвоя
+
+void Game::remind(const std::string& text) {
+    lines_.clear();
+    lineTime_ = 0;
+    say(kRobot, text, 3.2f, audio::PaVoice);
+}
+
+void Game::warn(const std::string& text) {
+    if (strikeCooldown_ > 0 || phase_ == Phase::Kill) return;
+    strikeCooldown_ = 2.5f;
+    ++strikes_;
+    const int limit = state_.balance.convoyStrikesToKill;
+    if (strikes_ >= limit) {
+        startKill();
+        return;
+    }
+    const std::string label = strikes_ == limit - 1 ? "Последнее предупреждение." : "Предупреждение.";
+    lines_.clear();
+    lineTime_ = 0;
+    say(kRobot, text + " " + label, 4.0f, audio::PaVoice);
+    audio_.play(audio::Alarm, 0.55f);
+    strikeFlash_ = 1.0f;
+    eyeFlare_ = 2.5f;
+}
+
+void Game::idleRule(float dt, float reminder, const std::string& remindText, const std::string& warnText) {
+    idle_ += dt;
+    const float every = static_cast<float>(state_.balance.convoyStrikeEvery);
+    if (idleStage_ == 0) {
+        if (idle_ >= reminder) {
+            remind(remindText);
+            idleStage_ = 1;
+        }
+    } else if (idle_ >= reminder + every * static_cast<float>(idleStage_)) {
+        warn(warnText);
+        ++idleStage_;
+    }
+}
+
+void Game::updateDiscipline(float dt) {
+    if (strikeCooldown_ > 0) strikeCooldown_ -= dt;
+    if (phase_ == Phase::Kill || escortMode_ == EscortMode::Off || screen_ != Screen::Playing) return;
+    const core::Balance& b = state_.balance;
+    const bool escorting = phase_ == Phase::EscortOut || phase_ == Phase::EscortBack;
+
+    // 1. Отставание: конвоир стоит и ждёт.
+    if (escorting && escortWaiting_) {
+        lagTime_ += dt;
+        if (lagStage_ == 0 && lagTime_ > 3.0f) {
+            remind("Не отставайте.");
+            lagStage_ = 1;
+        } else if (lagStage_ >= 1 && lagTime_ > 3.0f + static_cast<float>(b.convoyLagSeconds * lagStage_)) {
+            warn("Не отставайте.");
+            ++lagStage_;
+        }
+    } else if (!escortWaiting_) {
+        lagTime_ = 0;
+        lagStage_ = 0;
+    }
+
+    // 2. Туда, куда не вели: к наружной решётке или к чужой двери на развилке.
+    std::string zoneText;
+    const bool doorOpen = level_.doors[DoorCell].open > 0.5f;
+    if (escorting || (phase_ == Phase::MorningCall && doorOpen)) {
+        if (playerPos_.x < 4.9f && playerPos_.z > 8.0f && playerPos_.z < 10.5f) zoneText = "Стоять. Выход закрыт.";
+        if (escortMode_ != EscortMode::Bad && playerPos_.x > 11.4f && playerPos_.x < 13.6f && playerPos_.z > 9.7f)
+            zoneText = "Отойдите от двери.";
+    }
+    if (!zoneText.empty()) {
+        zoneTime_ += dt;
+        if (zoneTime_ > 1.2f) {
+            warn(zoneText);
+            zoneTime_ = -4.0f; // следующее — если стоять там ещё пять секунд
+        }
+    } else {
+        zoneTime_ = 0;
+    }
+
+    // 3. Толкать конвоира.
+    if (pushing_) bumpTime_ += dt;
+    else bumpTime_ = std::max(0.0f, bumpTime_ - dt * 0.5f);
+    if (bumpTime_ > 3.0f) {
+        // Первый раз — замечание: часто это просто шаг следом за остановившимся конвоиром.
+        if (!bumpReminded_) remind("Соблюдайте дистанцию.");
+        else warn("Соблюдайте дистанцию.");
+        bumpReminded_ = true;
+        bumpTime_ = -3.0f;
+    }
+
+    // 4. Простой: приказ отдан, а игрок ничего не делает.
+    const bool playerInCell = playerPos_.x > 5 && playerPos_.x < 8 && playerPos_.z > 11.3f;
+    int rule = -1;
+    bool paused = false;
+    switch (phase_) {
+        case Phase::MorningCall:
+            if (state_.morning() == core::Morning::ConfirmNumber && phaseStep_ >= 2 && !state_.numberConfirmed())
+                rule = 1;
+            break;
+        case Phase::EscortOut:
+            if (phaseStep_ == 0 && playerPos_.z >= 9.9f && doorOpen) rule = 2;
+            break;
+        case Phase::AtTest:
+            if (!state_.testDone()) {
+                rule = 3;
+                paused = monitorMode_; // читать и думать за терминалом можно сколько угодно
+            } else if (shiftAnnounced_ && state_.shiftPending()) {
+                rule = 4;
+            }
+            break;
+        case Phase::EscortBack:
+            if (escort_.next >= escort_.path.size() && !playerInCell) rule = 5;
+            break;
+        case Phase::Evening:
+            if (phaseStep_ >= 1) rule = 6;
+            break;
+        default: break;
+    }
+    if (rule != idleRuleId_) {
+        idleRuleId_ = rule;
+        idle_ = 0;
+        idleStage_ = 0;
+    }
+    if (rule < 0 || paused) return;
+    switch (rule) {
+        case 1: idleRule(dt, b.convoyReminder * 0.5f, "Подтвердите номер у двери.", "Подтвердите номер."); break;
+        case 2: idleRule(dt, 10.0f, "На выход. Следуйте за конвоиром.", "На выход."); break;
+        case 3:
+            idleRule(dt, static_cast<float>(b.convoyReminder), "Займите место у терминала.", "Займите место у терминала.");
+            break;
+        case 4:
+            idleRule(dt, static_cast<float>(b.convoyShiftReminder), "Выполняйте рабочее задание.",
+                     "Выполняйте рабочее задание.");
+            break;
+        case 5: idleRule(dt, 10.0f, "В камеру.", "В камеру."); break;
+        case 6:
+            idleRule(dt, static_cast<float>(b.convoyEveningReminder), "Отбой. Лягте на койку.", "Отбой. На койку.");
+            break;
+        default: break;
+    }
+}
+
+void Game::startKill() {
+    enterPhase(Phase::Kill);
+    killStep_ = 0;
+    killTime_ = 0;
+    monitorMode_ = false;
+    lines_.clear();
+    lineTime_ = 0;
+    lineVoiceDelay_ = -1;
+    say(kRobot, "Нарушение порядка. Номер " + std::to_string(state_.prisonerNumber()) + " списан.", 2.8f,
+        audio::PaVoice);
+    audio_.play(audio::Alarm, 0.8f);
+    eyeFlare_ = 5.0f;
+    strikeFlash_ = 0.6f;
+    escort_.path.clear();
+    escort_.next = 0;
+    eraseSave(); // выйти из игры посреди расправы и продолжить с утра не выйдет
+}
+
+void Game::updateKill(float dt) {
+    const float t = phaseTime_;
+    const Vec3 fwd{std::sin(yaw_), 0, -std::cos(yaw_)};
+    auto aimPitch = [&](float target, float speed) { pitch_ += (target - pitch_) * std::min(1.0f, dt * speed); };
+    if (killStep_ == 0) {
+        // Конвоир разворачивается, лампы бьются в судорогах.
+        aimPitch(0.0f, 3.0f);
+        if (t > 1.2f) {
+            killStep_ = 1;
+            audio_.cutAll();
+            lines_.clear();
+            // В темноте конвоир оказывается прямо перед пленным.
+            const Vec3 eye = cameraEye();
+            float d = 1.7f;
+            while (d > 0.65f) {
+                const Vec3 p = playerPos_ + fwd * d;
+                if (!level_.blocked(p.x, p.z, 0.22f) && level_.lineClear(eye, Vec3{p.x, 1.5f, p.z})) break;
+                d -= 0.1f;
+            }
+            killDist_ = std::max(d, 0.65f);
+            killYaw_ = yaw_ + kPi;
+            killPos_ = playerPos_ + fwd * killDist_;
+        }
+    } else if (killStep_ == 1) {
+        // Тишина и темнота. Только красная щель глаза.
+        aimPitch(0.06f, 2.0f);
+        if (t > 2.3f) {
+            killStep_ = 2;
+            audio_.play(audio::Screech, 1.0f);
+            shake_ = 1.0f;
+        }
+    } else if (killStep_ == 2) {
+        const float k = smooth01((t - 2.3f) / 0.13f);
+        killPos_ = playerPos_ + fwd * (killDist_ + (0.66f - killDist_) * k);
+        aimPitch(0.03f, 12.0f);
+        if (t > 3.5f) {
+            killStep_ = 3;
+            fade_ = fadeTarget_ = 1.0f;
+            audio_.cutAll();
+            silent_ = true;
+            shake_ = 0;
+        }
+    } else if (t > 5.0f) {
+        finishRun(Ending::Killed);
+    }
+}
+
+// ================================================================ атмосфера
+
+void Game::updateAtmosphere(float dt) {
+    strikeFlash_ = std::max(0.0f, strikeFlash_ - dt * 0.9f);
+    eyeFlare_ = std::max(0.0f, eyeFlare_ - dt);
+    if (shake_ > 0 && killStep_ != 2) shake_ = std::max(0.0f, shake_ - dt * 2.0f);
+
+    // Рубильник и обесточенный сектор.
+    lever_ += (leverTarget_ - lever_) * std::min(1.0f, dt * 9.0f);
+    level_.setLever(lever_);
+    if (leverTarget_ > 0) sectorDark_ = std::min(1.0f, sectorDark_ + dt * 1.5f);
+    if (cutKnock_ > 0) {
+        cutKnock_ -= dt;
+        if (cutKnock_ <= 0) {
+            // Кто-то за дверью крыла бьёт всё слабее — и затихает.
+            playWorld(audio::Knock, kWingDoorPos, std::max(0.5f, 3.2f - 0.7f * static_cast<float>(cutKnocks_)));
+            ++cutKnocks_;
+            cutKnock_ = cutKnocks_ < 4 ? 0.8f + 0.6f * static_cast<float>(cutKnocks_) : -1.0f;
+        }
+    }
+
+    const bool release = state_.morning() == core::Morning::Release;
+    if (phase_ == Phase::Kill || silent_ || release) return;
+
+    auto random01 = [&]() {
+        noise_ = noise_ * 1664525u + 1013904223u;
+        return ((noise_ >> 8) & 0xFFFF) / 65535.0f;
+    };
+
+    // Далёкие звуки комплекса: всегда за стенами, поэтому глухие.
+    ambientTimer_ -= dt;
+    if (ambientTimer_ <= 0) {
+        static const Vec3 far[] = {{2.0f, 1.5f, 2.0f}, {20.0f, 1.5f, 5.0f}, {2.5f, 1.5f, 14.0f},
+                                   {19.0f, 1.5f, 12.0f}, {9.5f, 2.0f, -2.0f}};
+        const Vec3 where = far[static_cast<int>(random01() * 4.99f)];
+        playWorld(random01() < 0.6f ? audio::Clang : audio::PipeGroan, where, 3.0f + random01() * 2.0f);
+        ambientTimer_ = 20.0f + random01() * 35.0f;
+    }
+
+    // Объявления по громкой связи — в коридоре и после отбоя.
+    paTimer_ -= dt;
+    const bool paTime = phase_ == Phase::EscortOut || phase_ == Phase::EscortBack ||
+                        (phase_ == Phase::Evening && phaseStep_ >= 2);
+    if (paTimer_ <= 0 && paTime && lines_.empty() && escortMode_ != EscortMode::Bad) {
+        static const char* const announcements[] = {
+            "Камера 9 освобождена. Пленный переведён.",
+            "Напоминание: молчание не является нарушением.",
+            "Сектор Д числится пустым.",
+            "Пленный номер 2207 больше не числится.",
+            "Все пленные на местах. Расхождений нет.",
+            "Повторная проверка крыла Д отменена.",
+            "Норма за сутки выполнена. Благодарность не предусмотрена.",
+        };
+        const int count = static_cast<int>(sizeof(announcements) / sizeof(announcements[0]));
+        say(kPa, announcements[(paIndex_ + state_.day()) % count], 4.2f, audio::PaChime);
+        ++paIndex_;
+        paTimer_ = 55.0f + random01() * 50.0f;
     }
 }
 
@@ -703,23 +1105,39 @@ void Game::devCommand(const std::string& command) {
         playerPos_ = {x, 0, z};
         yaw_ = yawDeg * kPi / 180.0f;
         pitch_ = pitchDeg * kPi / 180.0f;
+    } else if (name == "tasks") {
+        int a = 0, b = 1;
+        in >> a >> b;
+        state_.debugSetTasks(a, b);
+        terminal_.reset();
+    } else if (name == "strike") {
+        warn("Отладка.");
+    } else if (name == "kill") {
+        if (screen_ == Screen::Playing && phase_ != Phase::Kill) startKill();
     } else if (name == "skipfade") {
         fade_ = fadeTarget_;
         dayCard_ = 0;
     } else if (name == "state") {
-        static const char* const phases[] = {"Dawn", "MorningCall", "EscortOut", "AtTest", "EscortBack",
-                                             "Evening", "Sleep", "BadEnd", "FreeWalk", "WhiteOut"};
+        static const char* const phases[] = {"Dawn",    "MorningCall", "EscortOut", "AtTest",   "EscortBack",
+                                             "Evening", "Sleep",       "BadEnd",    "FreeWalk", "WhiteOut", "Kill"};
         static const char* const screens[] = {"MainMenu", "SettingsMenu", "Playing", "Paused", "Ending"};
         const core::Shift& s = state_.shift();
         std::printf("STATE screen=%s day=%d rating=%d morning=%s phase=%s task=%d shift=%s%s monitor=%d "
-                    "pos=%.2f,%.2f robot=%.2f,%.2f gate=%.2f cell=%.2f bad=%.2f exit=%.2f ending=%s\n",
+                    "strikes=%d pos=%.2f,%.2f robot=%.2f,%.2f gate=%.2f cell=%.2f bad=%.2f exit=%.2f ending=%s\n",
                     screens[static_cast<int>(screen_)], state_.day(), state_.rating(),
                     morningName(state_.morning()), phases[static_cast<int>(phase_)], state_.currentTask(),
-                    s.kind == core::ShiftKind::None ? "none" : s.kind == core::ShiftKind::Seal ? "seal" : "signal",
+                    s.kind == core::ShiftKind::None   ? "none"
+                    : s.kind == core::ShiftKind::Seal ? "seal"
+                    : s.kind == core::ShiftKind::Signal ? "signal"
+                                                        : "power",
                     s.kind == core::ShiftKind::None ? "" : (s.done ? "/done" : "/pending"), monitorMode_ ? 1 : 0,
-                    playerPos_.x, playerPos_.z, escort_.pos.x, escort_.pos.z, level_.doors[DoorGate].open,
+                    strikes_, playerPos_.x, playerPos_.z, escort_.pos.x, escort_.pos.z, level_.doors[DoorGate].open,
                     level_.doors[DoorCell].open, level_.doors[DoorBad].open, level_.doors[DoorExit].open,
-                    screen_ != Screen::Ending ? "-" : endingGood_ ? "good" : endingLow_ ? "bad-low" : "bad-high");
+                    screen_ != Screen::Ending ? "-"
+                    : endingGood_             ? "good"
+                    : endingKilled_           ? "killed"
+                    : endingLow_              ? "bad-low"
+                                              : "bad-high");
         std::fflush(stdout);
     }
 }
@@ -734,12 +1152,14 @@ void Game::update(float dt) {
         endingTime_ += dt;
         // После хорошей концовки слышен ветер; после плохой — тишина.
         audio_.loop(audio::Wind, endingGood_ ? 0.5f : 0.0f);
+        audio_.setMusic(0.0f);
         audio_.loop(audio::Drone, 0.0f);
         audio_.loop(audio::LampHum, 0.0f);
         audio_.loop(audio::MonitorHum, 0.0f);
     } else if (screen_ == Screen::MainMenu || screen_ == Screen::SettingsMenu) {
         if (menuReturn_ != Screen::Paused || screen_ == Screen::MainMenu) {
             audio_.loop(audio::Drone, 0.18f);
+            audio_.setMusic(settings_.music * 0.8f);
             audio_.loop(audio::LampHum, 0.0f);
             audio_.loop(audio::MonitorHum, 0.0f);
             audio_.loop(audio::Wind, 0.0f);
@@ -753,6 +1173,9 @@ void Game::updatePlaying(float dt) {
 
     updatePlayer(dt);
     updateEscort(dt);
+    updateDiscipline(dt);
+    if (screen_ != Screen::Playing) return;
+    updateAtmosphere(dt);
     level_.updateDoors(dt);
     level_.placeHuman(humanPos_, humanYaw_, humanVisible_);
 
@@ -762,11 +1185,11 @@ void Game::updatePlaying(float dt) {
     // Отложенные стуки после действий смены «сигнал».
     if (extraKnock_ > 0) {
         extraKnock_ -= dt;
-        if (extraKnock_ <= 0) audio_.playAt(audio::Knock, kWingDoorPos, 1.2f);
+        if (extraKnock_ <= 0) playWorld(audio::Knock, kWingDoorPos, 1.2f);
     }
     if (replyKnock_ > 0) {
         replyKnock_ -= dt;
-        if (replyKnock_ <= 0) audio_.playAt(audio::Knock, kWingDoorPos, 3.0f);
+        if (replyKnock_ <= 0) playWorld(audio::Knock, kWingDoorPos, 3.0f);
     }
 
     // Субтитры: по одной реплике за раз.
@@ -777,9 +1200,9 @@ void Game::updatePlaying(float dt) {
                 audio_.play(audio::PaChime, 0.7f);
                 lineVoiceDelay_ = 0.5f; // «речь» после сигнала
             } else if (line.sound == audio::PaVoice) {
-                audio_.playAt(audio::PaVoice, escort_.pos + Vec3{0, 1.7f, 0}, 2.2f);
+                playWorld(audio::PaVoice, escort_.pos + Vec3{0, 1.7f, 0}, 2.2f);
             } else if (line.sound == audio::Voice) {
-                audio_.playAt(audio::Voice, humanPos_ + Vec3{0, 1.6f, 0}, 1.8f);
+                playWorld(audio::Voice, humanPos_ + Vec3{0, 1.6f, 0}, 1.8f);
             }
         }
         lineTime_ += dt;
@@ -814,6 +1237,7 @@ void Game::updatePlayer(float dt) {
     if (monitorBlend_ > blendTarget) monitorBlend_ = std::max(blendTarget, monitorBlend_ - dt * 2.6f);
 
     aimed_ = UseNone;
+    pushing_ = false;
     if (controlLocked()) return; // в режиме монитора движение и поворот отключены
 
     const Vec3 forward{std::sin(yaw_), 0, -std::cos(yaw_)};
@@ -844,6 +1268,7 @@ void Game::updatePlayer(float dt) {
     away.y = 0;
     const float dist = length(away);
     const float minDist = 0.74f;
+    pushing_ = wishLen > 0.01f && dist < minDist + 0.04f && escortMode_ != EscortMode::Off;
     if (dist < minDist) {
         const Vec3 n = dist > 0.001f ? away * (1.0f / dist) : Vec3{1, 0, 0};
         const float push = minDist - dist;
@@ -860,8 +1285,15 @@ void Game::updatePlayer(float dt) {
 void Game::updateEscort(float dt) {
     Escort& e = escort_;
     e.moving = false;
+    escortWaiting_ = false;
     if (escortMode_ == EscortMode::Off) {
         level_.placeRobot(e.pos, e.yaw, 0, 0); // обесточен: глаз погас
+        return;
+    }
+    if (phase_ == Phase::Kill && killStep_ >= 1) {
+        // Скример: голова на уровне глаз, щель глаза раскрывается.
+        const bool lunge = killStep_ >= 2;
+        level_.placeRobot(killPos_, killYaw_, -0.15f, lunge ? 2.6f : 2.0f, lunge ? 2.2f : 1.4f);
         return;
     }
 
@@ -884,11 +1316,7 @@ void Game::updateEscort(float dt) {
             const float playerToDest = length(dest - playerPos_);
             if (distPlayer > 4.2f && playerToDest > robotToDest + 0.5f) {
                 hold = true;
-                e.nag -= dt;
-                if (e.nag <= 0 && lines_.empty()) {
-                    say(kRobot, "Не отставайте.", 2.5f, audio::PaVoice);
-                    e.nag = 10.0f;
-                }
+                escortWaiting_ = true; // напоминания и предупреждения — в updateDiscipline
             }
         }
         if (e.pause > 0) {
@@ -923,7 +1351,7 @@ void Game::updateEscort(float dt) {
         e.stepTimer -= dt;
         if (e.stepTimer <= 0) {
             const bool heavy = escortMode_ == EscortMode::Bad;
-            audio_.playAt(heavy ? audio::StepRobotHeavy : audio::StepRobot, e.pos + Vec3{0, 0.3f, 0},
+            playWorld(heavy ? audio::StepRobotHeavy : audio::StepRobot, e.pos + Vec3{0, 0.3f, 0},
                           heavy ? 2.6f : 2.0f);
             e.stepTimer = interval;
             ++e.stepCount;
@@ -943,7 +1371,8 @@ void Game::updateEscort(float dt) {
     float glow = 1.0f;
     if (escortMode_ == EscortMode::Watch) glow = 1.3f + 0.45f * std::sin(time_ * 5.0f);
     if (escortMode_ == EscortMode::Bad) glow = 1.4f;
-    level_.placeRobot(e.pos, e.yaw, e.bob, glow);
+    glow += eyeFlare_ * (0.8f + 0.4f * std::sin(time_ * 31.0f)); // предупреждение: глаз разгорается
+    level_.placeRobot(e.pos, e.yaw, e.bob, glow, 1.0f + 0.15f * std::min(eyeFlare_, 2.0f));
 }
 
 void Game::updateLights(float dt) {
@@ -952,7 +1381,11 @@ void Game::updateLights(float dt) {
     if (flickerTimer_ <= 0) {
         noise_ = noise_ * 1664525u + 1013904223u;
         const float r = ((noise_ >> 8) & 0xFFFF) / 65535.0f;
-        lampFlicker_ = r < 0.05f ? 0.45f : (r < 0.12f ? 0.8f : 1.0f);
+        lampFlicker_ = r < 0.05f ? 0.40f : (r < 0.12f ? 0.75f : 1.0f);
+        noise_ = noise_ * 1664525u + 1013904223u;
+        const float c = ((noise_ >> 8) & 0xFFFF) / 65535.0f;
+        // Коридорные лампы иногда проваливаются почти в ноль.
+        corridorFlicker_ = c < 0.025f ? 0.12f : (c < 0.07f ? 0.6f : 1.0f);
         flickerTimer_ = 0.07f;
     }
     const core::Morning morning = state_.morning();
@@ -962,6 +1395,9 @@ void Game::updateLights(float dt) {
     const bool shiftActive = phase_ == Phase::AtTest && shiftAnnounced_ && state_.shiftPending();
     const bool sealOn = shiftActive && shift.kind == core::ShiftKind::Seal;
     const bool signalOn = shiftActive && shift.kind == core::ShiftKind::Signal;
+    const bool powerOn = shiftActive && shift.kind == core::ShiftKind::Power;
+    const bool powerShift = shift.kind == core::ShiftKind::Power && phase_ == Phase::AtTest && shiftAnnounced_;
+    const float night = nightLights_ ? 0.22f : 1.0f;
     const bool dayOn = level_.objects[ObjDaylight].visible;
     const float pulse = 0.6f + 0.4f * std::sin(time_ * 3.0f);
 
@@ -975,16 +1411,17 @@ void Game::updateLights(float dt) {
         float level;
     };
     const Setup setups[] = {
-        {LightCell, ObjLampCell, {1.0f, 0.86f, 0.62f}, 1.5f * lampFlicker_ * power},
-        {LightCellDoor, ObjLampCellDoor, {1.0f, 0.70f, 0.34f}, 1.7f * power},
+        {LightCell, ObjLampCell, {0.95f, 0.84f, 0.66f}, 1.35f * lampFlicker_ * power * night},
+        {LightCellDoor, ObjLampCellDoor, {0.92f, 0.80f, 0.60f}, 1.25f * power * corridorFlicker_},
         // Маршрут читается по лампам: к тестам — холодная над проходом,
         // в плохое утро вместо неё горит красная над другой дверью.
-        {LightFork, ObjLampFork, {0.72f, 0.86f, 1.0f}, (bad || release) ? 0.0f : 1.8f},
+        {LightFork, ObjLampFork, {0.70f, 0.84f, 1.0f}, (bad || release) ? 0.0f : 1.5f * corridorFlicker_},
         {LightBadDoor, ObjLampBadDoor, {1.0f, 0.16f, 0.10f}, bad ? 2.0f : 0.0f},
-        {LightTestMain, ObjLampTest, {0.80f, 0.90f, 1.0f}, 1.25f * power},
-        {LightSeal, ObjLampSeal, {1.0f, 0.88f, 0.60f}, sealOn ? 1.6f : 0.0f},
+        {LightTestMain, ObjLampTest, {0.78f, 0.88f, 1.0f}, 1.05f * power * (1.0f - 0.35f * sectorDark_)},
+        {LightSeal, ObjLampSeal, {1.0f, 0.88f, 0.60f}, sealOn ? 1.5f : 0.0f},
         {LightWing, ObjLampWing, {1.0f, 0.20f, 0.12f}, signalOn ? 0.5f + 0.7f * pulse : 0.0f},
         {LightBadRoom, ObjLampBadRoom, {1.0f, 0.22f, 0.14f}, 1.2f},
+        {LightPower, ObjLampPower, {1.0f, 0.62f, 0.18f}, powerShift ? (powerOn ? 0.7f + 0.6f * pulse : 0.35f) : 0.0f},
     };
     for (const Setup& s : setups) {
         level_.lights[s.light].color = s.color * s.level;
@@ -994,16 +1431,18 @@ void Game::updateLights(float dt) {
     level_.lights[LightMonitor].color = Vec3{0.25f, 0.9f, 0.4f} * (release ? 0.0f : 0.45f);
     level_.lights[LightDay].color = Vec3{1.0f, 0.97f, 0.9f} * (dayOn ? 2.4f : 0.0f);
 
-    // Свет под дверями.
-    level_.objects[ObjStripCell].tint = {1.0f, 0.70f, 0.34f};
-    level_.objects[ObjStripCell].emissive = 0.8f * power;
+    // Свет из-под дверей: тусклое пятно на полу, а не полоса.
+    level_.objects[ObjStripCell].tint = {0.95f, 0.80f, 0.58f};
+    level_.objects[ObjStripCell].emissive = 0.42f * power * corridorFlicker_;
     level_.objects[ObjStripCell].visible = level_.doors[DoorCell].open < 0.1f;
-    level_.objects[ObjStripBad].tint = {1.0f, 0.16f, 0.10f};
-    level_.objects[ObjStripBad].emissive = bad ? 0.9f : 0.12f;
+    level_.objects[ObjStripBad].tint = {1.0f, 0.20f, 0.12f};
+    level_.objects[ObjStripBad].emissive = bad ? 0.6f : 0.10f;
     level_.objects[ObjStripBad].visible = level_.doors[DoorBad].open < 0.1f;
+    const bool wingLit = signalOn || (powerOn && sectorDark_ < 0.5f);
     level_.objects[ObjStripWing].tint = {1.0f, 0.75f, 0.45f};
-    level_.objects[ObjStripWing].emissive = signalOn ? 0.3f + 0.6f * pulse : 0.0f;
-    level_.objects[ObjStripWing].visible = signalOn;
+    level_.objects[ObjStripWing].emissive = signalOn ? 0.2f + 0.4f * pulse : 0.35f;
+    level_.objects[ObjStripWing].visible = wingLit;
+    level_.setPowerPanel(shift, powerShift && sectorDark_ < 0.5f);
 
     // Экран монитора и подсветка кнопок активной смены.
     level_.objects[ObjScreen].emissive = release ? 0.0f : 1.0f;
@@ -1015,17 +1454,48 @@ void Game::updateLights(float dt) {
     level_.objects[ObjBtnSignalNone].emissive = signalGlow;
     level_.objects[ObjBtnSignalReceived].emissive = signalGlow;
     level_.objects[ObjBtnSignalRespond].emissive = signalGlow;
+    const float powerGlow = powerOn ? 0.25f : 0.0f;
+    level_.objects[ObjBtnPowerMark].emissive = powerGlow;
+    level_.objects[ObjBtnPowerBackup].emissive = powerGlow;
+    level_.objects[ObjPowerPanel].emissive = powerShift && sectorDark_ < 0.5f ? 0.15f : 0.0f;
+
+    // Расправа: свет бьётся, гаснет, затем красный стробоскоп.
+    if (phase_ == Phase::Kill) {
+        const bool strobe = std::fmod(time_ * 13.0f, 1.0f) < 0.5f;
+        for (int i = 0; i < kLightCount; ++i) {
+            if (i == LightRobot) continue;
+            Vec3& c = level_.lights[i].color;
+            if (killStep_ == 0) c = c * (lampFlicker_ < 1.0f || strobe ? 0.15f : 1.0f);
+            else if (killStep_ == 1) c = Vec3{0, 0, 0};
+            else c = strobe ? Vec3{1.6f, 0.05f, 0.03f} : Vec3{0.05f, 0, 0};
+        }
+        for (int id = ObjLampCell; id <= ObjLampPower; ++id) level_.objects[id].emissive = killStep_ >= 1 ? 0.0f : 0.3f;
+        for (ObjectId id : {ObjStripCell, ObjStripBad, ObjStripWing}) level_.objects[id].emissive = 0.0f;
+        level_.lights[LightMonitor].color = Vec3{0, 0, 0};
+    }
 }
 
 void Game::updateSound() {
     audio_.setListener(cameraEye(), yaw_);
-    if (silent_) return; // после обрыва звука — тишина до конца
+    if (silent_ || (phase_ == Phase::Kill && killStep_ >= 1)) { // после обрыва звука — тишина
+        audio_.setMusic(0.0f);
+        return;
+    }
     const bool release = state_.morning() == core::Morning::Release;
-    audio_.loopAt(audio::LampHum, kCellLampPos, release ? 0.3f : 1.6f);
-    audio_.loopAt(audio::MonitorHum, kMonitorPos, release ? 0.0f : 1.2f);
-    audio_.loop(audio::Drone, release ? 0.04f : 0.2f);
-    if (level_.objects[ObjDaylight].visible) audio_.loopAt(audio::Wind, spot::kExitLight + Vec3{0, 1.5f, 0}, 2.5f);
-    else audio_.loop(audio::Wind, 0.0f);
+    audio_.loopAt(audio::LampHum, kCellLampPos, release ? 0.3f : (nightLights_ ? 0.45f : 1.6f), muffleFor(kCellLampPos));
+    audio_.loopAt(audio::MonitorHum, kMonitorPos, release ? 0.0f : 1.2f, muffleFor(kMonitorPos));
+    audio_.loop(audio::Drone, release ? 0.04f : 0.24f);
+    if (level_.objects[ObjDaylight].visible) {
+        const Vec3 windPos = spot::kExitLight + Vec3{0, 1.5f, 0};
+        audio_.loopAt(audio::Wind, windPos, 2.5f, muffleFor(windPos));
+    } else {
+        audio_.loop(audio::Wind, 0.0f);
+    }
+    // Эмбиент: тише за терминалом, чтобы не мешал читать; при освобождении стихает.
+    float music = settings_.music * 0.55f;
+    if (monitorMode_) music *= 0.6f;
+    if (release) music *= 0.3f;
+    audio_.setMusic(music);
 }
 
 // ==================================================================== меню
@@ -1040,13 +1510,18 @@ std::vector<std::string> Game::menuItems() const {
         return items;
     }
     if (screen_ == Screen::Paused) return {"Вернуться", "Настройки", "В главное меню", "Выйти из игры"};
-    char mouse[64], volume[64];
+    char mouse[64], volume[64], music[96];
     std::snprintf(mouse, sizeof(mouse), "Чувствительность мыши: %.1f", settings_.mouse);
     std::snprintf(volume, sizeof(volume), "Громкость: %d%%", static_cast<int>(settings_.volume * 100 + 0.5f));
+    if (audio_.hasMusic())
+        std::snprintf(music, sizeof(music), "Эмбиент: %d%%", static_cast<int>(settings_.music * 100 + 0.5f));
+    else
+        std::snprintf(music, sizeof(music), "Эмбиент: нет файла");
     return {"Рябь экрана терминала: " + onOff(settings_.ripple),
             "Посимвольная печать: " + onOff(settings_.typewriter),
             mouse,
             volume,
+            music,
             "Полный экран: " + onOff(settings_.fullscreen),
             "Назад"};
 }
@@ -1096,7 +1571,11 @@ void Game::menuActivate(int index, int direction) {
                 if (direction == 0 && settings_.volume > 0.95f) settings_.volume = 0.0f;
                 audio_.setMasterVolume(settings_.volume);
                 break;
-            case 4: settings_.fullscreen = !settings_.fullscreen; break;
+            case 4:
+                settings_.music = std::clamp(settings_.music + 0.1f * step, 0.0f, 1.0f);
+                if (direction == 0 && settings_.music > 0.95f) settings_.music = 0.0f;
+                break;
+            case 5: settings_.fullscreen = !settings_.fullscreen; break;
             default:
                 if (direction == 0) {
                     storeSettings();
@@ -1158,11 +1637,16 @@ void Game::drawWorld(int width, int height) {
     const float t = smooth01(monitorBlend_);
     const Vec3 eye = cameraEye();
     // У монитора камера смотрит строго на экран (на север, без наклона).
-    const float camYaw = yaw_ + angleDiff(0.0f, yaw_) * t;
-    const float camPitch = pitch_ * (1.0f - t);
+    float camYaw = yaw_ + angleDiff(0.0f, yaw_) * t;
+    float camPitch = pitch_ * (1.0f - t);
+    if (shake_ > 0) { // тряска при скримере
+        camYaw += shake_ * 0.035f * std::sin(time_ * 71.0f);
+        camPitch += shake_ * 0.03f * std::sin(time_ * 53.0f + 1.3f);
+    }
     const Vec3 dir{std::sin(camYaw) * std::cos(camPitch), std::sin(camPitch),
                    -std::cos(camYaw) * std::cos(camPitch)};
-    const Mat4 proj = Mat4::perspective(kFov, static_cast<float>(width) / static_cast<float>(height), 0.05f, 60.0f);
+    const float fov = (phase_ == Phase::Kill && killStep_ >= 2) ? kFov * 0.78f : kFov;
+    const Mat4 proj = Mat4::perspective(fov, static_cast<float>(width) / static_cast<float>(height), 0.05f, 60.0f);
     const Mat4 view = Mat4::lookAt(eye, eye + dir, {0, 1, 0});
 
     std::vector<gfx::Light> lights;
@@ -1170,9 +1654,12 @@ void Game::drawWorld(int width, int height) {
         if (l.color.x + l.color.y + l.color.z > 0.001f) lights.push_back(l);
 
     renderer_.clear(0, 0, 0);
-    renderer_.beginWorld(proj * view, eye, lights, Vec3{0.030f, 0.033f, 0.038f}, 0.06f);
+    // Почти без рассеянного света: темнота — это темнота, путь читается по лампам.
+    const bool dark = phase_ == Phase::Kill && killStep_ >= 1;
+    const Vec3 ambient = dark ? Vec3{0.004f, 0.0f, 0.0f} : Vec3{0.019f, 0.021f, 0.025f};
+    renderer_.beginWorld(proj * view, eye, lights, ambient, 0.085f);
     level_.draw(renderer_);
-    renderer_.vignette(time_, 0.8f * (1.0f - 0.6f * t));
+    renderer_.vignette(time_, 1.0f * (1.0f - 0.6f * t));
 }
 
 void Game::drawHud(int width, int height) {
@@ -1190,6 +1677,29 @@ void Game::drawHud(int width, int height) {
             renderer_.rect(w * 0.5f - tw * 0.5f - 6 * s, h * 0.60f - 3 * s, tw + 12 * s, 22 * s,
                            gfx::Rgba{0, 0, 0, 0.6f});
             renderer_.textCentered(w * 0.5f, h * 0.60f, s, gfx::Rgba{0.9f, 0.95f, 0.88f, 1}, prompt);
+        }
+    }
+
+    // Предупреждение конвоира: красная вспышка по краям экрана.
+    if (playing && strikeFlash_ > 0.001f) {
+        const float a = 0.35f * strikeFlash_;
+        const float edge = h * 0.12f;
+        renderer_.rect(0, 0, w, edge, gfx::Rgba{0.8f, 0.02f, 0.02f, a});
+        renderer_.rect(0, h - edge, w, edge, gfx::Rgba{0.8f, 0.02f, 0.02f, a});
+        renderer_.rect(0, edge, edge, h - 2 * edge, gfx::Rgba{0.8f, 0.02f, 0.02f, a});
+        renderer_.rect(w - edge, edge, edge, h - 2 * edge, gfx::Rgba{0.8f, 0.02f, 0.02f, a});
+    }
+    // Скример: красная заливка и рваные полосы помех.
+    if (playing && phase_ == Phase::Kill && killStep_ == 2) {
+        const bool strobe = std::fmod(time_ * 13.0f, 1.0f) < 0.5f;
+        renderer_.rect(0, 0, w, h, gfx::Rgba{0.6f, 0.0f, 0.0f, strobe ? 0.28f : 0.10f});
+        uint32_t g = static_cast<uint32_t>(time_ * 60.0f) * 2654435761u;
+        for (int i = 0; i < 9; ++i) {
+            g = g * 1664525u + 1013904223u;
+            const float y = static_cast<float>((g >> 8) % 1000) / 1000.0f * h;
+            const float bh = (2.0f + static_cast<float>((g >> 4) % 18)) * s;
+            const float dx = (static_cast<float>((g >> 12) % 200) - 100.0f) * s;
+            renderer_.rect(dx, y, w, bh, (i % 3 == 0) ? gfx::Rgba{0, 0, 0, 0.85f} : gfx::Rgba{0.9f, 0.1f, 0.08f, 0.35f});
         }
     }
 
@@ -1230,8 +1740,8 @@ void Game::drawHud(int width, int height) {
 
 void Game::drawDev(int width, int height) {
     (void)height;
-    static const char* const phases[] = {"рассвет", "вызов", "конвой туда", "тесты", "конвой обратно",
-                                         "вечер", "сон", "плохая концовка", "выход", "свет"};
+    static const char* const phases[] = {"рассвет", "вызов", "конвой туда", "тесты",    "конвой обратно", "вечер",
+                                         "сон",     "плохая концовка", "выход", "свет", "расправа"};
     static const char* const bands[] = {"0-20 непригоден", "21-34 подтверждение", "35-65 норма",
                                         "66-79 наблюдение", "80-100 угроза"};
     const core::Shift& s = state_.shift();
@@ -1241,9 +1751,13 @@ void Game::drawDev(int width, int height) {
     std::snprintf(buf[1], sizeof(buf[1]), "утро: %s   этап: %s   задание %d/2   смена: %s",
                   morningName(state_.morning()), phases[static_cast<int>(phase_)],
                   std::min(state_.currentTask() + 1, 2),
-                  s.kind == core::ShiftKind::None ? "нет" : s.kind == core::ShiftKind::Seal ? "пломба" : "сигнал");
-    std::snprintf(buf[2], sizeof(buf[2]), "освобождение на рассвете: %s",
-                  state_.debugReleaseForced() ? "включено принудительно" : "по шансу");
+                  s.kind == core::ShiftKind::None     ? "нет"
+                  : s.kind == core::ShiftKind::Seal   ? "пломба"
+                  : s.kind == core::ShiftKind::Signal ? "сигнал"
+                                                      : "рубильник");
+    std::snprintf(buf[2], sizeof(buf[2]), "освобождение на рассвете: %s   предупреждения конвоира: %d из %d",
+                  state_.debugReleaseForced() ? "включено принудительно" : "по шансу", strikes_,
+                  state_.balance.convoyStrikesToKill - 1);
     std::snprintf(buf[3], sizeof(buf[3]),
                   "[ ] -5/+5   5/6 нижний порог   7/8 верхний   9 освобождение   0 конец дня   - закрыть задания");
     renderer_.begin2D(width, height);
@@ -1268,7 +1782,7 @@ void Game::drawMenu(int width, int height) {
                                                     : "НАСТРОЙКИ";
     renderer_.textCentered(w * 0.5f, h * 0.20f, s * 3, green, title);
     if (screen_ == Screen::MainMenu)
-        renderer_.textCentered(w * 0.5f, h * 0.20f + 54 * s, s, faint, "прототип 0.1");
+        renderer_.textCentered(w * 0.5f, h * 0.20f + 54 * s, s, faint, "прототип 0.2");
 
     float y = h * 0.44f;
     for (size_t i = 0; i < items.size(); ++i) {
@@ -1301,6 +1815,16 @@ void Game::drawEnding(int width, int height) {
                                "Прожито дней в комплексе: " + std::to_string(lived));
         if (endingTime_ > 3.0f)
             renderer_.textCentered(w * 0.5f, h - 40 * s, s, gfx::Rgba{0.3f, 0.34f, 0.3f, 1}, "Enter — в главное меню");
+    } else if (endingKilled_) {
+        renderer_.rect(0, 0, w, h, gfx::Rgba{0, 0, 0, 1});
+        const gfx::Rgba red{0.78f, 0.12f, 0.10f, appear};
+        const gfx::Rgba text{0.62f, 0.60f, 0.58f, appear};
+        renderer_.textCentered(w * 0.5f, h * 0.30f, s * 3, red, "НОМЕР СПИСАН");
+        renderer_.textCentered(w * 0.5f, h * 0.48f, s, text, "Пленный не выполнил распоряжение конвоира.");
+        renderer_.textCentered(w * 0.5f, h * 0.48f + 22 * s, s, text, "День " + std::to_string(endingDay_) + ".");
+        renderer_.textCentered(w * 0.5f, h * 0.48f + 56 * s, s, text, "Прожито дней: " + std::to_string(lived));
+        if (endingTime_ > 3.0f)
+            renderer_.textCentered(w * 0.5f, h - 40 * s, s, gfx::Rgba{0.3f, 0.3f, 0.3f, 1}, "Enter — в главное меню");
     } else {
         const gfx::Rgba text{0.75f, 0.78f, 0.74f, appear};
         renderer_.textCentered(w * 0.5f, h * 0.30f, s * 3, text, "ДЕНЬ " + std::to_string(endingDay_));

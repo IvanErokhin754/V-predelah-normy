@@ -73,6 +73,13 @@ void GameState::buildDay() {
     shift_ = makeShift(shiftKindForDay(balance, day_), r);
 }
 
+void GameState::debugSetTasks(int first, int second) {
+    if (first < 0 || first >= kVariantCount || second < 0 || second >= kVariantCount) return;
+    Rng r(daySeed_ ^ 0x5EEDull);
+    tasks_[0] = makeTask(balance, first, r);
+    tasks_[1] = makeTask(balance, second, r);
+}
+
 int GameState::currentTask() const {
     for (int i = 0; i < kTaskCount; ++i)
         if (!tasks_[i].confirmed) return i;
@@ -99,7 +106,9 @@ bool GameState::confirmShiftAction(int action) {
     if (action < 0 || action > 2) return false;
     if (!testDone() || !shiftPending()) return false;
 
-    const Effect& e = (shift_.kind == ShiftKind::Seal) ? balance.seal[action] : balance.signal[action];
+    const Effect& e = shift_.kind == ShiftKind::Seal     ? balance.seal[action]
+                      : shift_.kind == ShiftKind::Signal ? balance.signal[action]
+                                                         : balance.power[action];
     rating_ = applyEffect(balance, rating_, e);
     shift_.done = true;
     shift_.action = action;
@@ -133,7 +142,7 @@ void GameState::debugEndDay() {
 
 std::string GameState::serialize() const {
     std::ostringstream out;
-    out << "v=1\n";
+    out << "v=2\n";
     out << "rng=" << rng_.state << "\n";
     out << "day=" << day_ << "\n";
     out << "rating=" << rating_ << "\n";
@@ -186,7 +195,7 @@ bool GameState::deserialize(const std::string& text) {
         return static_cast<int>(v);
     };
 
-    if (getInt("v") != 1) return false;
+    if (getInt("v") != 2) return false; // v1 — сохранения версии 0.1 с другим набором заданий
     const uint64_t rngState = getU64("rng");
     const int day = getInt("day");
     const int rating = getInt("rating");

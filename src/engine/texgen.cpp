@@ -343,6 +343,42 @@ Image cloth(Color base, Color stripe) {
 
 Image flat(Color c) { return Image(8, 8, c); }
 
+Image robotEye() {
+    Image img(64, 16);
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 64; ++x) {
+            const float dx = (x - 31.5f) / 32.0f, dy = (y - 7.5f) / 8.0f;
+            float v = 1.0f - 0.45f * (dx * dx) - 0.3f * (dy * dy); // ярче в центре
+            if (y % 3 == 2) v *= 0.45f;                             // строки развёртки
+            const float r = std::sqrt((x - 31.5f) * (x - 31.5f) + (y - 7.5f) * (y - 7.5f) * 4.0f);
+            if (r < 5.5f) v = 0.12f;                    // тёмный объектив
+            if (r < 2.0f) v = 1.0f;                     // и точка в нём
+            if (r >= 5.5f && r < 7.0f) v = std::min(1.0f, v * 1.25f);
+            v *= 0.9f + 0.2f * rnd(x, y, 251);
+            const uint8_t c = static_cast<uint8_t>(std::clamp(v, 0.0f, 1.0f) * 255.0f);
+            img.set(x, y, Color{c, c, c, 255});
+        }
+    return img;
+}
+
+Image lightSpill() {
+    Image img(32, 16, Color{0, 0, 0, 0});
+    static const float bayer[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 32; ++x) {
+            const float depth = 1.0f - y / 16.0f;                       // от двери вглубь
+            const float edge = std::min(1.0f, std::min(x, 31 - x) / 5.0f); // края щели темнее
+            float v = depth * depth * (0.45f + 0.55f * edge);
+            v *= 0.85f + 0.3f * (rnd(x, y, 241) - 0.5f);
+            const float threshold = (bayer[y % 4][x % 4] + 0.5f) / 16.0f;
+            if (v * 1.6f < threshold) continue; // прозрачный пиксель: край рассыпается
+            const float level = std::floor(std::min(1.0f, v * 1.3f) * 5.0f) / 5.0f + 0.12f;
+            const uint8_t c = static_cast<uint8_t>(std::min(255.0f, level * 255.0f));
+            img.set(x, y, Color{c, c, c, 255});
+        }
+    return img;
+}
+
 // -------------------------------------------------------------------- детали
 
 Image monitorBezel() {
@@ -443,6 +479,30 @@ Image invoice(int crateNo, int sealNo) {
     for (int x = 0; x < 70; ++x)
         img.fillRect(150 + x, 292 + static_cast<int>(6 * std::sin(x * 0.45f)), 2, 2, Color{40, 50, 110, 255});
     img.frameRect(24, 276, 40, 34, 2, Color{130, 40, 40, 255});
+    return img;
+}
+
+Image powerPanel(int sector, int occupied, bool active) {
+    Image img = controlPanel("ПИТАНИЕ · КРЫЛО Д");
+    const Color screen{18, 14, 12, 255};
+    const Color led = active ? Color{238, 70, 48, 255} : Color{86, 40, 32, 255};
+    const Color ledDim = active ? Color{150, 44, 32, 255} : Color{60, 30, 26, 255};
+    // Табло сектора.
+    img.fillRect(28, 60, 200, 92, screen);
+    img.frameRect(28, 60, 200, 92, 3, Color{50, 52, 52, 255});
+    font::drawText(img, 40, 68, 2, led, "СЕКТОР Д-" + std::to_string(sector));
+    font::drawText(img, 40, 104, 2, occupied > 0 ? led : ledDim, "ЗАНЯТО: " + std::to_string(occupied));
+    if (active && occupied > 0) img.fillRect(204, 110, 12, 12, led);
+    // Схема линии: шина и отводы.
+    const Color wire{40, 44, 44, 255};
+    img.fillRect(28, 170, 200, 4, wire);
+    for (int i = 0; i < 5; ++i) {
+        const int x = 40 + i * 44;
+        img.fillRect(x, 170, 4, 22, wire);
+        img.fillRect(x - 6, 192, 16, 10, i == 2 ? led : Color{70, 74, 72, 255});
+    }
+    img.fillRect(24, 214, 208, 24, Color{168, 138, 40, 255});
+    font::drawTextCentered(img, 128, 218, 1, kInk, "ПЛАНОВОЕ ОТКЛЮЧЕНИЕ");
     return img;
 }
 

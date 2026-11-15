@@ -1,6 +1,6 @@
 CMakeFiles/norma.dir/src/engine/gl_min.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/gl_min.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstddef \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \

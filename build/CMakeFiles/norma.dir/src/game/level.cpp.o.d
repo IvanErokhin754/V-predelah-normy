@@ -1,6 +1,6 @@
 CMakeFiles/norma.dir/src/game/level.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/level.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/level.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -751,11 +751,11 @@ CMakeFiles/norma.dir/src/game/level.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/tasks.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/renderer.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/font.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/gl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/math3d.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/texgen.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/renderer.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/gl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/math3d.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/texgen.h

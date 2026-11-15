@@ -1,7 +1,7 @@
 CMakeFiles/norma.dir/src/game/terminal.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/terminal.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/game_state.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/terminal.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/game_state.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -660,10 +660,10 @@ CMakeFiles/norma.dir/src/game/terminal.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/sample.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bit \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/rng.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../core/tasks.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/audio.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/rng.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/audio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/vector \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/comparison.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/lexicographical_compare_three_way.h \
@@ -756,8 +756,8 @@ CMakeFiles/norma.dir/src/game/terminal.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/math3d.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/sdl_min.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/renderer.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/font.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/game/../engine/gl_min.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/math3d.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/sdl_min.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/renderer.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/game/../engine/gl_min.h

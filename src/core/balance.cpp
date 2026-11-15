@@ -61,6 +61,12 @@ const IntKey kIntKeys[] = {
     {"threshold.normal_max", &Balance::normalMax},
     {"threshold.watch_max", &Balance::watchMax},
     {"shift.every_days", &Balance::shiftEvery},
+    {"convoy.strikes_to_kill", &Balance::convoyStrikesToKill},
+    {"convoy.reminder_seconds", &Balance::convoyReminder},
+    {"convoy.strike_every_seconds", &Balance::convoyStrikeEvery},
+    {"convoy.shift_reminder_seconds", &Balance::convoyShiftReminder},
+    {"convoy.evening_reminder_seconds", &Balance::convoyEveningReminder},
+    {"convoy.lag_seconds", &Balance::convoyLagSeconds},
 };
 
 Effect* findEffect(Balance& b, const std::string& key) {
@@ -81,6 +87,24 @@ Effect* findEffect(Balance& b, const std::string& key) {
         {"sector.noise", &b.sector[0]},
         {"sector.speech", &b.sector[1]},
         {"sector.marked_empty_by_mistake", &b.sector[2]},
+        {"rations.confirm_issue", &b.rations[0]},
+        {"rations.mark_untouched", &b.rations[1]},
+        {"rations.request_opening", &b.rations[2]},
+        {"headcount.check_list.confirm_list", &b.headcount[0][0]},
+        {"headcount.check_list.mark_extra", &b.headcount[0][1]},
+        {"headcount.check_list.request_identity", &b.headcount[0][2]},
+        {"headcount.mark_all.confirm_list", &b.headcount[1][0]},
+        {"headcount.mark_all.mark_extra", &b.headcount[1][1]},
+        {"headcount.mark_all.request_identity", &b.headcount[1][2]},
+        {"vitals.copy_journal", &b.vitals[0]},
+        {"vitals.mark_no_signal", &b.vitals[1]},
+        {"vitals.request_inspection", &b.vitals[2]},
+        {"note.discard", &b.note[0]},
+        {"note.copy_verbatim", &b.note[1]},
+        {"note.request_cellmates", &b.note[2]},
+        {"power.cut", &b.power[0]},
+        {"power.mark_occupied", &b.power[1]},
+        {"power.backup", &b.power[2]},
         {"seal.confirm", &b.seal[0]},
         {"seal.mismatch", &b.seal[1]},
         {"seal.scan_neighbor", &b.seal[2]},
@@ -150,6 +174,9 @@ bool Balance::loadText(const std::string& text, std::string* error) {
     if (!ordered) return fail(error, lineNo, "пороги должны идти по возрастанию");
     if (next.start < next.minRating || next.start > next.maxRating)
         return fail(error, lineNo, "стартовый рейтинг вне диапазона");
+    if (next.convoyStrikesToKill < 1 || next.convoyReminder < 1 || next.convoyStrikeEvery < 1 ||
+        next.convoyShiftReminder < 1 || next.convoyEveningReminder < 1 || next.convoyLagSeconds < 1)
+        return fail(error, lineNo, "параметры конвоя должны быть не меньше 1");
     if (next.middleStep < 1 || next.shiftEvery < 1)
         return fail(error, lineNo, "шаг к середине и период смен должны быть не меньше 1");
 

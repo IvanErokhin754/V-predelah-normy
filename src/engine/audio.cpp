@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
+#include <fstream>
+#include <iterator>
 
 namespace audio {
 
@@ -306,6 +309,109 @@ std::vector<float> genButton() {
     return b;
 }
 
+// Предупреждение конвоира: резкий двухтоновый зуммер, три импульса.
+std::vector<float> genAlarm() {
+    auto b = silence(0.9f);
+    for (size_t i = 0; i < b.size(); ++i) {
+        const float t = timeOf(i);
+        const int pulse = static_cast<int>(t / 0.3f);
+        const float local = t - pulse * 0.3f;
+        if (local > 0.22f) continue;
+        const float f = pulse % 2 == 0 ? 523.0f : 392.0f;
+        const float env = std::min(1.0f, local * 300.0f) * std::min(1.0f, (0.22f - local) * 300.0f);
+        b[i] = 0.42f * env * std::tanh(5.0f * std::sin(kTau * f * t) + 2.0f * std::sin(kTau * f * 1.5f * t));
+    }
+    return b;
+}
+
+// Скример: удар, затем визг перегруженного динамика и шум.
+std::vector<float> genScreech() {
+    auto b = silence(1.7f);
+    Noise n(111);
+    Resonator r;
+    float p1 = 0, p2 = 0, p3 = 0;
+    for (size_t i = 0; i < b.size(); ++i) {
+        const float t = timeOf(i);
+        const float env = std::min(1.0f, t * 60.0f) * (1.0f - smooth01((t - 1.25f) / 0.4f));
+        const float wobble = 1.0f + 0.06f * std::sin(kTau * 23.0f * t) + 0.03f * n.next();
+        p1 += kTau * 311.0f * wobble / kRate;
+        p2 += kTau * 329.0f * wobble / kRate;
+        p3 += kTau * (1240.0f + 380.0f * std::sin(kTau * 7.0f * t)) / kRate;
+        const float scream = std::tanh(4.0f * (std::sin(p1) + std::sin(p2))) * 0.35f + std::sin(p3) * 0.22f;
+        const float hiss = r.process(n.next(), 2600.0f + 900.0f * std::sin(kTau * 3.0f * t), 0.25f) * 0.5f;
+        b[i] = env * std::tanh(2.2f * (scream + hiss));
+    }
+    addThump(b, 0.0f, 55, 0.25f, 1.4f);
+    addClick(b, 0.0f, 0.02f, 1.0f, 112);
+    return b;
+}
+
+// Далёкий удар металла: негармонические обертоны и долгий хвост.
+std::vector<float> genClang() {
+    auto b = silence(3.2f);
+    const float partials[] = {173, 419, 688, 1031, 1529};
+    const float decays[] = {1.4f, 0.9f, 0.6f, 0.35f, 0.2f};
+    for (int k = 0; k < 5; ++k) addRing(b, 0.0f, partials[k], decays[k], 0.22f / (1 + k * 0.4f));
+    addThump(b, 0.0f, 70, 0.2f, 0.6f);
+    addClick(b, 0.0f, 0.01f, 0.5f, 121);
+    return b;
+}
+
+// Стон труб: низкий скрежет с плавающей частотой.
+std::vector<float> genPipeGroan() {
+    auto b = silence(3.5f);
+    Noise n(131);
+    Resonator r;
+    float phase = 0;
+    for (size_t i = 0; i < b.size(); ++i) {
+        const float t = timeOf(i);
+        const float env = smooth01(t / 0.8f) * (1.0f - smooth01((t - 2.4f) / 1.1f));
+        const float f = 58.0f + 14.0f * std::sin(kTau * 0.35f * t) + 6.0f * std::sin(kTau * 2.1f * t);
+        phase += kTau * f / kRate;
+        const float groan = std::tanh(3.0f * std::sin(phase)) * 0.4f;
+        const float creak = r.process(n.next(), 380.0f + 120.0f * std::sin(kTau * 0.7f * t), 0.08f) * 0.12f;
+        b[i] = env * (groan + creak);
+    }
+    return b;
+}
+
+std::vector<float> genLever() {
+    auto b = silence(0.9f);
+    addClick(b, 0.0f, 0.01f, 0.6f, 141);
+    addRing(b, 0.0f, 620, 0.08f, 0.2f);
+    addThump(b, 0.18f, 64, 0.18f, 1.3f);
+    addClick(b, 0.18f, 0.015f, 0.9f, 142);
+    addRing(b, 0.18f, 211, 0.4f, 0.25f);
+    return b;
+}
+
+std::vector<float> genPowerDown() {
+    auto b = silence(2.2f);
+    float phase = 0;
+    for (size_t i = 0; i < b.size(); ++i) {
+        const float t = timeOf(i);
+        const float f = 120.0f * std::exp(-t * 1.4f) + 18.0f;
+        phase += kTau * f / kRate;
+        const float env = 1.0f - smooth01((t - 1.4f) / 0.8f);
+        b[i] = env * (0.35f * std::tanh(3.0f * std::sin(phase)) + 0.1f * std::sin(phase * 3.0f));
+    }
+    return b;
+}
+
+// Монитор пульса: три коротких сигнала, затем ровный тон.
+std::vector<float> genFlatline() {
+    auto b = silence(3.0f);
+    for (size_t i = 0; i < b.size(); ++i) {
+        const float t = timeOf(i);
+        float amp = 0;
+        for (float beat : {0.0f, 0.62f, 1.18f})
+            if (t >= beat && t < beat + 0.09f) amp = 1;
+        if (t > 1.7f) amp = 1.0f - smooth01((t - 2.8f) / 0.2f);
+        b[i] = 0.22f * amp * std::sin(kTau * 1000.0f * t);
+    }
+    return b;
+}
+
 } // namespace
 
 bool Audio::init() {
@@ -329,6 +435,13 @@ bool Audio::init() {
     buffers_[UiConfirm] = genBlip(660, 990, 0.14f, 0.3f);
     buffers_[Button] = genButton();
     buffers_[ReaderBeep] = genBlip(1800, 2400, 0.22f, 0.3f);
+    buffers_[Alarm] = genAlarm();
+    buffers_[Screech] = genScreech();
+    buffers_[Clang] = genClang();
+    buffers_[PipeGroan] = genPipeGroan();
+    buffers_[Lever] = genLever();
+    buffers_[PowerDown] = genPowerDown();
+    buffers_[Flatline] = genFlatline();
 
     SDL_AudioSpec want{};
     want.freq = kRate;
@@ -379,15 +492,18 @@ void Audio::play(Sound s, float gain) {
         v.buf = &buffers_[s];
         v.pos = 0;
         v.left = v.right = gain;
+        v.lowpass = 1;
+        v.lp = 0;
         break;
     }
     SDL_UnlockAudioDevice(device_);
 }
 
-void Audio::playAt(Sound s, const Vec3& pos, float gain) {
+void Audio::playAt(Sound s, const Vec3& pos, float gain, float muffle) {
     if (device_ == 0) return;
     float l = 0, r = 0;
-    spatial(pos, gain, &l, &r);
+    muffle = std::clamp(muffle, 0.0f, 1.0f);
+    spatial(pos, gain * (1.0f - 0.65f * muffle), &l, &r);
     SDL_LockAudioDevice(device_);
     for (Channel& v : voices_) {
         if (v.buf != nullptr) continue;
@@ -395,6 +511,8 @@ void Audio::playAt(Sound s, const Vec3& pos, float gain) {
         v.pos = 0;
         v.left = l;
         v.right = r;
+        v.lowpass = 1.0f - 0.93f * muffle;
+        v.lp = 0;
         break;
     }
     SDL_UnlockAudioDevice(device_);
@@ -407,14 +525,107 @@ void Audio::loop(Sound s, float gain) {
     SDL_UnlockAudioDevice(device_);
 }
 
-void Audio::loopAt(Sound s, const Vec3& pos, float gain) {
+void Audio::loopAt(Sound s, const Vec3& pos, float gain, float muffle) {
     if (device_ == 0 || s >= kLoopCount) return;
     float l = 0, r = 0;
-    spatial(pos, gain, &l, &r);
+    muffle = std::clamp(muffle, 0.0f, 1.0f);
+    spatial(pos, gain * (1.0f - 0.65f * muffle), &l, &r);
     SDL_LockAudioDevice(device_);
     loops_[s].targetLeft = l;
     loops_[s].targetRight = r;
+    loops_[s].targetLowpass = 1.0f - 0.93f * muffle;
     SDL_UnlockAudioDevice(device_);
+}
+
+void Audio::setMusic(float gain) {
+    if (device_ == 0) return;
+    SDL_LockAudioDevice(device_);
+    musicTarget_ = std::max(0.0f, gain);
+    SDL_UnlockAudioDevice(device_);
+}
+
+namespace {
+
+uint32_t le32(const uint8_t* p) { return p[0] | (p[1] << 8) | (p[2] << 16) | (static_cast<uint32_t>(p[3]) << 24); }
+uint16_t le16(const uint8_t* p) { return static_cast<uint16_t>(p[0] | (p[1] << 8)); }
+
+bool fail(std::string* error, const std::string& what) {
+    if (error) *error = what;
+    return false;
+}
+
+} // namespace
+
+bool Audio::loadMusic(const std::string& path, std::string* error) {
+    std::ifstream f(path, std::ios::binary);
+    if (!f) return fail(error, "нет файла " + path);
+    const std::vector<uint8_t> data((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    if (data.size() < 12 || std::memcmp(data.data(), "RIFF", 4) != 0 || std::memcmp(data.data() + 8, "WAVE", 4) != 0)
+        return fail(error, "не WAV-файл: " + path);
+
+    int format = 0, channels = 0, bits = 0;
+    uint32_t rate = 0;
+    const uint8_t* samples = nullptr;
+    size_t sampleBytes = 0;
+    size_t at = 12;
+    while (at + 8 <= data.size()) {
+        const uint8_t* chunk = data.data() + at;
+        const uint32_t size = le32(chunk + 4);
+        const size_t body = at + 8;
+        const size_t avail = std::min<size_t>(size, data.size() - body);
+        if (std::memcmp(chunk, "fmt ", 4) == 0 && avail >= 16) {
+            format = le16(chunk + 8);
+            channels = le16(chunk + 10);
+            rate = le32(chunk + 12);
+            bits = le16(chunk + 22);
+            if (format == 0xFFFE && avail >= 26) format = le16(chunk + 8 + 24); // WAVE_FORMAT_EXTENSIBLE
+        } else if (std::memcmp(chunk, "data", 4) == 0) {
+            samples = data.data() + body;
+            sampleBytes = avail;
+        }
+        at = body + size + (size & 1);
+    }
+    const bool pcm = format == 1 && (bits == 8 || bits == 16 || bits == 24 || bits == 32);
+    const bool flt = format == 3 && bits == 32;
+    if (!samples || channels < 1 || rate < 8000 || (!pcm && !flt))
+        return fail(error, "формат WAV не поддерживается (нужен PCM 8/16/24/32 бит или float): " + path);
+
+    const int bytes = bits / 8;
+    const size_t frames = sampleBytes / (static_cast<size_t>(bytes) * channels);
+    if (frames < 2) return fail(error, "в WAV нет звука: " + path);
+    auto read = [&](size_t frame, int ch) -> float {
+        const uint8_t* p = samples + (frame * channels + std::min(ch, channels - 1)) * bytes;
+        if (flt) {
+            float v;
+            std::memcpy(&v, p, 4);
+            return v;
+        }
+        switch (bits) {
+            case 8: return (p[0] - 128) / 128.0f;
+            case 16: return static_cast<int16_t>(le16(p)) / 32768.0f;
+            case 24: return static_cast<float>(static_cast<int32_t>(le32(p - 1) & 0xFFFFFF00u)) / 2147483648.0f;
+            default: return static_cast<float>(static_cast<int32_t>(le32(p))) / 2147483648.0f;
+        }
+    };
+
+    // Пересчёт в 44100 Гц линейной интерполяцией.
+    const double step = static_cast<double>(rate) / kRate;
+    const size_t outFrames = static_cast<size_t>((frames - 1) / step);
+    std::vector<int16_t> out(outFrames * 2);
+    for (size_t i = 0; i < outFrames; ++i) {
+        const double src = i * step;
+        const size_t i0 = static_cast<size_t>(src);
+        const float k = static_cast<float>(src - i0);
+        for (int ch = 0; ch < 2; ++ch) {
+            const float v = read(i0, ch) * (1 - k) + read(i0 + 1, ch) * k;
+            out[i * 2 + ch] = static_cast<int16_t>(std::clamp(v, -1.0f, 1.0f) * 32767.0f);
+        }
+    }
+    if (device_ != 0) SDL_LockAudioDevice(device_);
+    music_.swap(out);
+    musicPos_ = 0;
+    if (device_ != 0) SDL_UnlockAudioDevice(device_);
+    return true;
 }
 
 void Audio::cutAll() {
@@ -422,6 +633,7 @@ void Audio::cutAll() {
     SDL_LockAudioDevice(device_);
     for (Channel& v : voices_) v.buf = nullptr;
     for (Loop& l : loops_) l.left = l.right = l.targetLeft = l.targetRight = 0;
+    musicGain_ = musicTarget_ = 0;
     SDL_UnlockAudioDevice(device_);
 }
 
@@ -436,19 +648,31 @@ void Audio::mix(Sint16* out, int frames) {
             Loop& lp = loops_[s];
             lp.left += (lp.targetLeft - lp.left) * 0.0008f;
             lp.right += (lp.targetRight - lp.right) * 0.0008f;
+            lp.lowpass += (lp.targetLowpass - lp.lowpass) * 0.0008f;
             const std::vector<float>& b = buffers_[s];
             if (b.empty()) continue;
-            const float v = b[lp.pos];
+            lp.lp += lp.lowpass * (b[lp.pos] - lp.lp);
+            const float v = lp.lp;
             if (++lp.pos >= b.size()) lp.pos = 0;
             l += v * lp.left;
             r += v * lp.right;
         }
         for (Channel& v : voices_) {
             if (v.buf == nullptr) continue;
-            const float sample = (*v.buf)[v.pos];
+            v.lp += v.lowpass * ((*v.buf)[v.pos] - v.lp);
+            const float sample = v.lp;
             l += sample * v.left;
             r += sample * v.right;
             if (++v.pos >= v.buf->size()) v.buf = nullptr;
+        }
+        if (!music_.empty()) {
+            musicGain_ += (musicTarget_ - musicGain_) * 0.00005f; // плавно, около секунды
+            if (musicGain_ > 0.0001f) {
+                l += music_[musicPos_] / 32768.0f * musicGain_;
+                r += music_[musicPos_ + 1] / 32768.0f * musicGain_;
+            }
+            musicPos_ += 2;
+            if (musicPos_ >= music_.size()) musicPos_ = 0;
         }
         // Мягкое ограничение вместо хрипа при перегрузке.
         out[i * 2 + 0] = static_cast<Sint16>(std::tanh(l * master_) * 32000.0f);

@@ -57,10 +57,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy
+CMAKE_SOURCE_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy/build
+CMAKE_BINARY_DIR = /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -94,14 +94,14 @@ clean: CMakeFiles/norma.dir/clean
 CMakeFiles/norma_core.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_core.dir/build.make CMakeFiles/norma_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_core.dir/build.make CMakeFiles/norma_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=11,12,13,14 "Built target norma_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=11,12,13,14 "Built target norma_core"
 .PHONY : CMakeFiles/norma_core.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/norma_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/norma_core.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 0
 .PHONY : CMakeFiles/norma_core.dir/rule
 
 # Convenience name for target.
@@ -111,7 +111,7 @@ norma_core: CMakeFiles/norma_core.dir/rule
 # codegen rule for target.
 CMakeFiles/norma_core.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_core.dir/build.make CMakeFiles/norma_core.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=11,12,13,14 "Finished codegen for target norma_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=11,12,13,14 "Finished codegen for target norma_core"
 .PHONY : CMakeFiles/norma_core.dir/codegen
 
 # clean rule for target.
@@ -126,14 +126,14 @@ CMakeFiles/norma_core.dir/clean:
 CMakeFiles/norma_tests.dir/all: CMakeFiles/norma_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_tests.dir/build.make CMakeFiles/norma_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_tests.dir/build.make CMakeFiles/norma_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=15,16 "Built target norma_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=15,16 "Built target norma_tests"
 .PHONY : CMakeFiles/norma_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/norma_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/norma_tests.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 0
 .PHONY : CMakeFiles/norma_tests.dir/rule
 
 # Convenience name for target.
@@ -143,7 +143,7 @@ norma_tests: CMakeFiles/norma_tests.dir/rule
 # codegen rule for target.
 CMakeFiles/norma_tests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma_tests.dir/build.make CMakeFiles/norma_tests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=15,16 "Finished codegen for target norma_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=15,16 "Finished codegen for target norma_tests"
 .PHONY : CMakeFiles/norma_tests.dir/codegen
 
 # clean rule for target.
@@ -158,14 +158,14 @@ CMakeFiles/norma_tests.dir/clean:
 CMakeFiles/norma.dir/all: CMakeFiles/norma_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma.dir/build.make CMakeFiles/norma.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma.dir/build.make CMakeFiles/norma.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target norma"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target norma"
 .PHONY : CMakeFiles/norma.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/norma.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 14
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/norma.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles 0
 .PHONY : CMakeFiles/norma.dir/rule
 
 # Convenience name for target.
@@ -175,7 +175,7 @@ norma: CMakeFiles/norma.dir/rule
 # codegen rule for target.
 CMakeFiles/norma.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norma.dir/build.make CMakeFiles/norma.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Finished codegen for target norma"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Finished codegen for target norma"
 .PHONY : CMakeFiles/norma.dir/codegen
 
 # clean rule for target.

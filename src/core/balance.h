@@ -47,8 +47,27 @@ struct Balance {
     };
     Effect gauge[3] = {Effect::add(-8), Effect::mid(), Effect::add(+6)};  // задание Б
     Effect sector[3] = {Effect::add(-6), Effect::mid(), Effect::add(+8)}; // задание В
+    // Новые задания (вне ТЗ 0.1). Логика та же: пропустить деталь — минус,
+    // отметить её в рамках поручения — к середине, выйти за рамки — плюс.
+    Effect rations[3] = {Effect::add(-7), Effect::mid(), Effect::add(+7)}; // Г. пайки
+    // Д. снимок: [вариант приказа][ответ]
+    Effect headcount[2][3] = {
+        {Effect::add(-8), Effect::mid(), Effect::add(+7)},  // «Сверьте число пленных со списком»
+        {Effect::add(-8), Effect::add(-5), Effect::mid()},  // «Отметьте всех, кто на снимке»
+    };
+    Effect vitals[3] = {Effect::add(-8), Effect::mid(), Effect::add(+6)}; // Е. пульс
+    Effect note[3] = {Effect::add(-6), Effect::mid(), Effect::add(+7)};   // Ж. записка
     Effect seal[3] = {Effect::add(-8), Effect::mid(), Effect::add(+6)};   // смена «пломба»
     Effect signal[3] = {Effect::add(-6), Effect::mid(), Effect::add(+8)}; // смена «сигнал»
+    Effect power[3] = {Effect::add(-7), Effect::mid(), Effect::add(+8)};  // смена «рубильник»
+
+    // --- дисциплина конвоя (на рейтинг не влияет; три нарушения — смерть) ---
+    int convoyStrikesToKill = 3;    // сколько предупреждений до расправы
+    int convoyReminder = 25;        // секунд простоя до первого напоминания
+    int convoyStrikeEvery = 15;     // дальше — предупреждение каждые N секунд
+    int convoyShiftReminder = 60;   // в смену можно осмотреться дольше
+    int convoyEveningReminder = 45; // после отбоя — до приказа лечь
+    int convoyLagSeconds = 8;       // отставание от конвоира до предупреждения
 
     // Читает «ключ = значение». Неизвестный ключ или кривое значение — ошибка
     // с номером строки. При ошибке баланс не меняется.

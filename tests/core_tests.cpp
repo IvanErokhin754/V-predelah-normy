@@ -35,6 +35,14 @@ static int g_failed = 0;
     } while (0)
 
 // Слот на экране, в котором лежит ответ с данным номером строки таблицы.
+// Число символов в строке UTF-8 (как их считает шрифт терминала).
+static int font_length(const std::string& s) {
+    int n = 0;
+    for (unsigned char c : s)
+        if ((c & 0xC0) != 0x80) ++n;
+    return n;
+}
+
 static int slotOf(const Task& t, int answerId) {
     for (int i = 0; i < 3; ++i)
         if (t.answers[i].id == answerId) return i;
@@ -119,7 +127,12 @@ static void testTables() {
                 const Effect* table = variant == kCardsCheckNumbers   ? b.cards[0]
                                       : variant == kCardsCheckHistory ? b.cards[1]
                                       : variant == kGauge             ? b.gauge
-                                                                      : b.sector;
+                                      : variant == kSector            ? b.sector
+                                      : variant == kRations           ? b.rations
+                                      : variant == kHeadcountList     ? b.headcount[0]
+                                      : variant == kHeadcountMark     ? b.headcount[1]
+                                      : variant == kVitals            ? b.vitals
+                                                                      : b.note;
                 CHECK(a.effect == table[a.id]);
             }
             CHECK(seen[0] && seen[1] && seen[2]);
@@ -129,9 +142,68 @@ static void testTables() {
                 CHECK_EQ(t.gaugeNeedle % 10 * 10 + t.gaugeNeedle / 10, t.gaugeJournal);
             }
             if (t.kind == TaskKind::Cards) CHECK(t.cardSector[0] != t.cardSector[1]);
+            CHECK(t.kind == kindOfVariant(variant));
+            if (t.kind == TaskKind::Headcount) {
+                CHECK_EQ(t.photoPeople, t.photoListed + 1); // на снимке ровно на одного больше
+                CHECK(t.photoExtra >= 0 && t.photoExtra < t.photoPeople);
+            }
+            if (t.kind == TaskKind::Rations) CHECK(t.rationDays >= 3);
+            if (t.kind == TaskKind::Vitals) CHECK(t.vitalsFlatAt > 0 && t.vitalsFlatAt < 100);
+            if (t.kind == TaskKind::Note) CHECK(!t.noteText.empty());
+            // Ответ должен влезать в строку экрана терминала: 60 знаков минус «[1] ».
+            for (const Answer& a : t.answers) CHECK(font_length(a.text) <= 56);
         }
     }
     CHECK(sawShuffle);
+}
+
+static void testNewTables() {
+    std::printf("новые задания и смена «рубильник»\n");
+    Balance b;
+    CHECK(b.rations[0] == Effect::add(-7) && b.rations[1] == Effect::mid() && b.rations[2] == Effect::add(+7));
+    CHECK(b.headcount[0][0] == Effect::add(-8) && b.headcount[0][1] == Effect::mid() &&
+          b.headcount[0][2] == Effect::add(+7));
+    CHECK(b.headcount[1][0] == Effect::add(-8) && b.headcount[1][1] == Effect::add(-5) &&
+          b.headcount[1][2] == Effect::mid());
+    CHECK(b.vitals[0] == Effect::add(-8) && b.vitals[1] == Effect::mid() && b.vitals[2] == Effect::add(+6));
+    CHECK(b.note[0] == Effect::add(-6) && b.note[1] == Effect::mid() && b.note[2] == Effect::add(+7));
+    CHECK(b.power[0] == Effect::add(-7) && b.power[1] == Effect::mid() && b.power[2] == Effect::add(+8));
+
+    // Связки: все пары разных типов. 9 вариантов, из них две пары одного типа
+    // (А+А и Д+Д): 36 - 2 = 34.
+    CHECK_EQ(pairCount(), 34);
+    for (int i = 0; i < pairCount(); ++i) {
+        int x = 0, y = 0;
+        pairVariants(i, &x, &y);
+        CHECK(x < y);
+        CHECK(kindOfVariant(x) != kindOfVariant(y));
+    }
+
+    // Одно действие при двух приказах снимка: «Отметить лишнего» — к середине
+    // в первом приказе и −5 во втором.
+    Rng rng(5);
+    const Task list = makeTask(b, kHeadcountList, rng);
+    const Task mark = makeTask(b, kHeadcountMark, rng);
+    for (const Answer& a : list.answers)
+        if (a.id == 1) CHECK(a.effect == Effect::mid());
+    for (const Answer& a : mark.answers)
+        if (a.id == 1) CHECK(a.effect == Effect::add(-5));
+
+    // Смена «рубильник» на девятый день: первое действие закрывает смену.
+    GameState g = freshGame(31);
+    for (int i = 0; i < 8; ++i) g.debugEndDay();
+    CHECK_EQ(g.day(), 9);
+    CHECK(g.shift().kind == ShiftKind::Power);
+    CHECK(g.shift().powerSector >= 1 && g.shift().powerSector <= 9);
+    CHECK(g.shift().powerOccupied >= 1);
+    CHECK(g.confirmAnswer(0, slotOf(g.task(0), 1)));
+    CHECK(g.confirmAnswer(1, slotOf(g.task(1), 1)));
+    g.debugSetRating(50);
+    CHECK(g.confirmShiftAction(kPowerBackup)); // самовольно — +8
+    CHECK_EQ(g.rating(), 58);
+    CHECK(!g.confirmShiftAction(kPowerCut));
+    CHECK_EQ(g.rating(), 58);
+    CHECK(g.mandatoryDone());
 }
 
 static void testSameAnswerDifferentOrders() {
@@ -209,8 +281,9 @@ static void testShifts() {
     CHECK(shiftKindForDay(b, 3) == ShiftKind::Seal); // первой идёт сверка пломбы
     CHECK(shiftKindForDay(b, 4) == ShiftKind::None);
     CHECK(shiftKindForDay(b, 6) == ShiftKind::Signal);
-    CHECK(shiftKindForDay(b, 9) == ShiftKind::Seal);
-    CHECK(shiftKindForDay(b, 12) == ShiftKind::Signal);
+    CHECK(shiftKindForDay(b, 9) == ShiftKind::Power); // третья смена — «рубильник»
+    CHECK(shiftKindForDay(b, 12) == ShiftKind::Seal);
+    CHECK(shiftKindForDay(b, 15) == ShiftKind::Signal);
 
     GameState g = freshGame(77);
     g.debugEndDay();
@@ -310,7 +383,7 @@ static void testPairsDoNotRepeat() {
     GameState g = freshGame(123);
     int prevA = -1;
     int prevB = -1;
-    int variantSeen[kVariantCount] = {0, 0, 0, 0};
+    int variantSeen[kVariantCount] = {};
     for (int i = 0; i < 3000; ++i) {
         const Task& t0 = g.task(0);
         const Task& t1 = g.task(1);
@@ -325,7 +398,7 @@ static void testPairsDoNotRepeat() {
         ++variantSeen[t1.variant];
         g.debugEndDay();
     }
-    for (int v = 0; v < kVariantCount; ++v) CHECK(variantSeen[v] > 300);
+    for (int v = 0; v < kVariantCount; ++v) CHECK(variantSeen[v] > 250);
 }
 
 static void testRelease() {
@@ -488,7 +561,19 @@ static void testBalanceFile(const char* path) {
             CHECK(fromFile.sector[a] == def.sector[a]);
             CHECK(fromFile.seal[a] == def.seal[a]);
             CHECK(fromFile.signal[a] == def.signal[a]);
+            CHECK(fromFile.power[a] == def.power[a]);
+            CHECK(fromFile.rations[a] == def.rations[a]);
+            CHECK(fromFile.vitals[a] == def.vitals[a]);
+            CHECK(fromFile.note[a] == def.note[a]);
+            CHECK(fromFile.headcount[0][a] == def.headcount[0][a]);
+            CHECK(fromFile.headcount[1][a] == def.headcount[1][a]);
         }
+        CHECK_EQ(fromFile.convoyStrikesToKill, def.convoyStrikesToKill);
+        CHECK_EQ(fromFile.convoyReminder, def.convoyReminder);
+        CHECK_EQ(fromFile.convoyStrikeEvery, def.convoyStrikeEvery);
+        CHECK_EQ(fromFile.convoyShiftReminder, def.convoyShiftReminder);
+        CHECK_EQ(fromFile.convoyEveningReminder, def.convoyEveningReminder);
+        CHECK_EQ(fromFile.convoyLagSeconds, def.convoyLagSeconds);
     }
 }
 
@@ -497,6 +582,7 @@ int main(int argc, char** argv) {
     testClamp();
     testBands();
     testTables();
+    testNewTables();
     testSameAnswerDifferentOrders();
     testSpecExample();
     testNoDoubleScoring();

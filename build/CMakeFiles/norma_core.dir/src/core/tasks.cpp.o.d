@@ -1,6 +1,6 @@
 CMakeFiles/norma_core.dir/src/core/tasks.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/tasks.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/tasks.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/tasks.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/tasks.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -659,5 +659,5 @@ CMakeFiles/norma_core.dir/src/core/tasks.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/sample.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bit \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/balance.h \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/core/rng.h
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/balance.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/core/rng.h

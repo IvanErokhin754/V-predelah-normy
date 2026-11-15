@@ -1,6 +1,6 @@
 CMakeFiles/norma.dir/src/engine/font.cpp.o: \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.cpp \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font.h \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.cpp \
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -751,4 +751,4 @@ CMakeFiles/norma.dir/src/engine/font.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/ivanerokhin2507/Desktop/v-predelah-normy/src/engine/font_data.inc
+  /Users/ivanerokhin2507/Desktop/v-predelah-normy_0.2/src/engine/font_data.inc
