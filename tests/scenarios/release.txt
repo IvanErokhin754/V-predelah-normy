@@ -1,0 +1,33 @@
+dev new
+dev rating 5
+dev release
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 60
+shot scenario_shots/r_a_call.ppm
+wait 60
+shot scenario_shots/r_b_static.ppm
+wait 340
+shot scenario_shots/r_c_door.ppm
+dev state
+wait 200
+shot scenario_shots/r_d_human.ppm
+dev tp 6.5 9.4 -90 0
+wait 3
+shot scenario_shots/r_e_corridor_light.ppm
+dev tp 8.0 8.6 60 -10
+wait 3
+shot scenario_shots/r_e2_robot_off.ppm
+dev tp 3.4 9.5 -90 0
+wait 3
+shot scenario_shots/r_f_exit.ppm
+key W 80
+wait 100
+dev state
+shot scenario_shots/r_g_white.ppm
+wait 200
+dev state
+wait 200
+shot scenario_shots/r_h_ending.ppm

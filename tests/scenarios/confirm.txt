@@ -1,0 +1,34 @@
+dev new
+dev rating 30
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 340
+dev tp 7.4 12.0 0 -4
+wait 3
+shot scenario_shots/cf_a_prompt.ppm
+dev state
+key E
+wait 10
+dev state
+wait 200
+dev state
+# ---- watch ----
+dev new
+dev rating 70
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 400
+shot scenario_shots/w_a_doorway.ppm
+wait 220
+shot scenario_shots/w_b_line.ppm
+wait 320
+dev state
+key W 100
+wait 130
+dev state
+wait 300
+dev state

@@ -1,0 +1,15 @@
+dev new
+dev rating 80
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 350
+dev tp 9.5 9.0 90 0
+wait 380
+shot scenario_shots/bh_c_fork_line.ppm
+wait 200
+dev tp 12.5 12.6 180 0
+wait 700
+dev state
+shot scenario_shots/bh_g_ending.ppm

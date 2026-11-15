@@ -1,0 +1,2 @@
+/usr/bin/ar qc libnorma_core.a CMakeFiles/norma_core.dir/src/core/balance.cpp.o CMakeFiles/norma_core.dir/src/core/tasks.cpp.o CMakeFiles/norma_core.dir/src/core/game_state.cpp.o
+/usr/bin/ranlib libnorma_core.a

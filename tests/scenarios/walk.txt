@@ -1,0 +1,27 @@
+dev new
+wait 30
+dev skipfade
+wait 340
+key W 100
+wait 110
+dev state
+mouse 357 0
+key W 420
+wait 430
+dev state
+key ESC
+wait 3
+dev state
+shot scenario_shots/p_a_pause.ppm
+key S
+wait 2
+key ENTER
+wait 3
+shot scenario_shots/p_b_settings.ppm
+key ENTER
+wait 3
+key ESC
+wait 2
+key ESC
+wait 3
+dev state

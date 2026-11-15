@@ -1,0 +1,6 @@
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/norma_core.dir
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/norma_tests.dir
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/norma.dir
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/test.dir
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/edit_cache.dir
+/Users/ivanerokhin2507/Desktop/v-predelah-normy/build/CMakeFiles/rebuild_cache.dir

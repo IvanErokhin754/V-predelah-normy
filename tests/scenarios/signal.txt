@@ -1,0 +1,48 @@
+dev new
+dev endday
+dev endday
+dev endday
+dev endday
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 340
+dev tp 12.5 4.6 180 0
+wait 420
+dev tp 12.5 2.6 0 -25
+wait 3
+key E
+wait 60
+key ENTER
+wait 3
+key 2
+wait 3
+key ENTER
+wait 70
+key ENTER
+wait 3
+key 2
+wait 3
+key ENTER
+wait 70
+key ESC
+wait 140
+dev state
+dev tp 9.6 3.6 -85 -3
+wait 30
+shot scenario_shots/sg_a_wing.ppm
+dev tp 7.9 4.27 -90 -32
+wait 3
+shot scenario_shots/sg_b_prompt.ppm
+dev tp 7.9 4.27 -90 -5
+wait 3
+shot scenario_shots/sg_c_prompt_none.ppm
+dev tp 7.9 4.27 -90 -32
+wait 3
+key E
+wait 10
+dev state
+shot scenario_shots/sg_d_after.ppm
+wait 420
+dev state

@@ -1,0 +1,36 @@
+dev new
+dev rating 10
+dev endday
+dev state
+wait 30
+dev skipfade
+wait 150
+shot scenario_shots/bl_a_call.ppm
+wait 200
+dev tp 6.5 9.0 90 0
+wait 3
+shot scenario_shots/bl_b_corridor_red.ppm
+wait 320
+dev state
+dev tp 9.5 9.0 90 0
+wait 60
+shot scenario_shots/bl_c_fork_line.ppm
+wait 150
+shot scenario_shots/bl_d_door_open.ppm
+dev state
+dev tp 12.5 10.2 180 0
+wait 200
+shot scenario_shots/bl_e_badroom.ppm
+dev tp 12.5 12.6 180 0
+wait 5
+dev state
+wait 120
+shot scenario_shots/bl_f_closing.ppm
+wait 200
+dev state
+wait 300
+dev state
+shot scenario_shots/bl_g_ending.ppm
+key ENTER
+wait 5
+dev state
